@@ -2838,7 +2838,9 @@ void CEXISlippi::handleLogInRequest()
 	bool logInRes = user->AttemptLogin();
 	if (!logInRes)
 	{
+#ifndef USE_HEADLESS
 		main_frame->LowerRenderWindow();
+#endif
 		user->OpenLogInPage();
 		user->ListenForLogIn();
 	}
@@ -2855,8 +2857,10 @@ void CEXISlippi::handleUpdateAppRequest()
 #ifdef _WIN32
 	if (isUpdating)
 	{
+#ifndef USE_HEADLESS
 		main_frame->LowerRenderWindow();
 		main_frame->DoExit();
+#endif
 	}
 #endif
 }
