@@ -12,7 +12,7 @@
 #include "VideoCommon/AVIDump.h"
 
 // Forward declarations
-struct EFBRectangle;
+class EFBRectangle;
 struct EFBCopyFormat;
 class PostProcessor;
 class XFBSourceBase;
@@ -36,7 +36,7 @@ public:
 	void SetGenerationMode() override {}
 	void SetDepthMode() override {}
 	void SetLogicOpMode() override {}
-	void SetSamplerState() override {}
+	void SetSamplerState(int stage, int texindex, bool custom_tex) override {}
 	void SetInterlacingMode() override {}
 	void SetViewport() override {}
 	void SetFullscreen(bool enable_fullscreen) override {}

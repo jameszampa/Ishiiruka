@@ -28,9 +28,10 @@
 #include "VideoCommon/PixelShaderManager.h"
 #include "VideoCommon/TextureCacheBase.h"
 #include "VideoCommon/VertexLoaderManager.h"
+#include "VideoCommon/VertexManagerBase.h"
 #include "VideoCommon/VertexShaderManager.h"
 #include "VideoCommon/VideoConfig.h"
-#include "VideoCommon/Debugger.h"
+#include "VideoBackends/Software/DebugUtil.h"
 
 namespace Headless
 {
@@ -182,7 +183,7 @@ bool VideoBackend::Initialize(void *window_handle)
 	UpdateActiveConfig();
 
 	PixelEngine::Init();
-	Debugger::Init();
+	DebugUtil::Init();
 
 	// Do our OSD callbacks
 	OSD::DoCallbacks(OSD::CallbackType::Initialization);
@@ -240,7 +241,7 @@ void VideoBackend::Video_Cleanup()
 	{
 		Fifo::Shutdown();
 		g_renderer->Shutdown();
-		Debugger::Shutdown();
+		DebugUtil::Shutdown();
 		// The following calls are NOT Thread Safe
 		// And need to be called from the video thread
 		g_renderer->Shutdown();
