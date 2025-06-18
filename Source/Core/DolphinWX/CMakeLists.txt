@@ -253,6 +253,10 @@ endif()
 
 # Only build -nogui binaries when ENABLE_HEADLESS is on
 if(ENABLE_HEADLESS)
+	set(NOGUI_SRCS MainNoGUI.cpp)
+	if(USE_X11)
+		set(NOGUI_SRCS ${NOGUI_SRCS} X11Utils.cpp)
+	endif()
 	set(DOLPHIN_NOGUI_EXE ${DOLPHIN_EXE_BASE}-nogui)
 	add_executable(${DOLPHIN_NOGUI_EXE} ${SRCS} ${NOGUI_SRCS})
 	target_link_libraries(${DOLPHIN_NOGUI_EXE} ${LIBS} ${WXLIBS})
