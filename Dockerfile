@@ -44,6 +44,7 @@ RUN apt-get update && \
     libwxgtk3.0-gtk3-dev \
     libwxgtk3.0-gtk3-0v5 \
     libgtk2.0-dev \
+    libasound2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust and initialize environment
@@ -65,7 +66,7 @@ WORKDIR /opt
 
 RUN git clone https://github.com/jameszampa/Ishiiruka.git && \
     cd Ishiiruka && \
-    git checkout feature/headless-playback && \
+    git checkout feature/headless-playback-frame-dumping && \
     git submodule update --init --recursive && \
     chmod +x build-linux-headless.sh
 
