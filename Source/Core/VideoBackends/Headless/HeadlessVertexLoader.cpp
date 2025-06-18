@@ -3,53 +3,85 @@
 // Refer to the license.txt file included.
 
 #include "VideoBackends/Headless/HeadlessVertexLoader.h"
+
+#include "Common/CommonTypes.h"
 #include "Common/Logging/Log.h"
+
+#include "VideoCommon/IndexGenerator.h"
+#include "VideoCommon/Statistics.h"
 #include "VideoCommon/VertexLoaderManager.h"
-#include "VideoCommon/CPMemory.h"
+#include "VideoCommon/VideoConfig.h"
 
 namespace Headless
 {
 
-HeadlessVertexLoader::HeadlessVertexLoader(const TVtxDesc& vtx_desc, const VAT& vtx_attr)
-	: VertexLoaderBase(vtx_desc, vtx_attr)
+HeadlessVertexFormat::HeadlessVertexFormat(const PortableVertexDeclaration& vtx_decl)
 {
-	InitializeVertexData();
+	vtx_decl = vtx_decl;
 }
 
-HeadlessVertexLoader::~HeadlessVertexLoader()
+HeadlessVertexFormat::~HeadlessVertexFormat()
 {
 }
 
-s32 HeadlessVertexLoader::RunVertices(const VertexLoaderParameters& parameters)
+void HeadlessVertexFormat::SetupVertexPointers()
 {
-	// In headless mode, we don't actually process vertices
-	// Just return the count to indicate success
-	m_numLoadedVertices += parameters.count;
-	return parameters.count;
+	// No-op in headless mode
 }
 
-void HeadlessVertexLoader::InitializeVertexData()
+HeadlessVertexManager::HeadlessVertexManager()
+	: m_cpu_vertex_buffer(MAXVBUFFERSIZE), m_cpu_index_buffer(MAXIBUFFERSIZE)
 {
-	// Initialize vertex data for headless mode
-	m_native_components = 0;
-	m_VertexSize = 0;
-	m_native_stride = 0;
-	
-	// Set up basic vertex declaration
-	memset(&m_native_vtx_decl, 0, sizeof(m_native_vtx_decl));
-	
-	// Position component
-	m_native_vtx_decl.position.components = 3;
-	m_native_vtx_decl.position.enable = true;
-	m_native_vtx_decl.position.offset = 0;
-	m_native_vtx_decl.position.type = FORMAT_FLOAT;
-	
-	// Calculate basic vertex size and stride
-	m_VertexSize = 12; // 3 floats for position
-	m_native_stride = 12;
-	m_native_vtx_decl.stride = m_native_stride;
-	
-	INFO_LOG(VIDEO, "Headless vertex loader initialized with vertex size %d, stride %d", m_VertexSize, m_native_stride);
+	CreateDeviceObjects();
+}
+
+HeadlessVertexManager::~HeadlessVertexManager()
+{
+	DestroyDeviceObjects();
+}
+
+std::unique_ptr<NativeVertexFormat> HeadlessVertexManager::CreateNativeVertexFormat(const PortableVertexDeclaration& vtx_decl)
+{
+	return std::make_unique<HeadlessVertexFormat>(vtx_decl);
+}
+
+void HeadlessVertexManager::CreateDeviceObjects()
+{
+	// No device objects needed in headless mode
+}
+
+void HeadlessVertexManager::DestroyDeviceObjects()
+{
+	// No device objects to destroy in headless mode
+}
+
+void HeadlessVertexManager::PrepareShaders(PrimitiveType primitive, u32 components, const XFMemory& xfr, const BPMemory& bpm, bool ongputhread)
+{
+	// No shader preparation needed in headless mode
+}
+
+void HeadlessVertexManager::ResetBuffer(u32 stride)
+{
+	m_pCurBufferPointer = m_pBaseBufferPointer = m_cpu_vertex_buffer.data();
+	m_pEndBufferPointer = m_pBaseBufferPointer + m_cpu_vertex_buffer.size();
+	IndexGenerator::Start(GetIndexBuffer());
+}
+
+u16* HeadlessVertexManager::GetIndexBuffer()
+{
+	return m_cpu_index_buffer.data();
+}
+
+void HeadlessVertexManager::vFlush(bool useDstAlpha)
+{
+	// In headless mode, we don't actually render anything
+	// Just update statistics
+	INCSTAT(stats.thisFrame.numDrawCalls);
+}
+
+void HeadlessVertexManager::PrepareDrawBuffers(u32 stride)
+{
+	// No buffer preparation needed in headless mode
 }
 
 } // namespace Headless 

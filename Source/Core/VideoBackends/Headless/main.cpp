@@ -213,10 +213,8 @@ void VideoBackend::Video_Prepare()
 
 	BPInit();
 	
-	// Create default vertex loader with empty vertex description
-	TVtxDesc vtx_desc = {};
-	VAT vat = {};
-	g_vertex_manager = std::make_unique<HeadlessVertexLoader>(vtx_desc, vat);
+	// Create vertex manager
+	g_vertex_manager = std::make_unique<HeadlessVertexManager>();
 	
 	g_perf_query = std::make_unique<PerfQuery>();
 	Fifo::Init(); // must be done before OpcodeDecoder_Init()
