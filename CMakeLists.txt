@@ -440,7 +440,7 @@ endif()
 
 if(ENABLE_HEADLESS)
 	message("Enabling Headless! Disabling GUI, force enabling EGL!")
-	set(USE_X11 1)
+	set(USE_X11 0)
 	set(USE_EGL 1)
 	set(DISABLE_WX 1)
 	set(ENABLE_QT2 0)
