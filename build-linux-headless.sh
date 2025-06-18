@@ -1,7 +1,7 @@
 #!/bin/bash -e
 # build-linux-headless.sh
 
-CMAKE_FLAGS='-DLINUX_LOCAL_DEV=true -DUSE_X11=ON -DENABLE_HEADLESS=ON'
+CMAKE_FLAGS='-DLINUX_LOCAL_DEV=true -DENABLE_HEADLESS=ON'
 
 PLAYBACK_CODES_PATH="./Data/PlaybackGeckoCodes/"
 DATA_SYS_PATH="./Data/Sys/"
