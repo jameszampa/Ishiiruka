@@ -485,40 +485,53 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "[DEBUG] Setting up configuration\n");
 	// Set config fields before UICommon::Init
 	if (!output_directory.empty()) {
+		fprintf(stderr, "[DEBUG] Processing output_directory: %s\n", output_directory.c_str());
 		if (output_directory.back() != '/' && output_directory.back() != '\\')
 			output_directory += "/";
+		fprintf(stderr, "[DEBUG] About to set SConfig output directory\n");
 		SConfig::GetInstance().m_strOutputDirectory = output_directory;
 		fprintf(stderr, "[DEBUG] Set SConfig output directory to: %s\n", output_directory.c_str());
 	}
 	if (!output_filename_base.empty()) {
+		fprintf(stderr, "[DEBUG] About to set SConfig output filename base\n");
 		SConfig::GetInstance().m_strOutputFilenameBase = output_filename_base;
 		fprintf(stderr, "[DEBUG] Set SConfig output filename base to: %s\n", output_filename_base.c_str());
 	}
 	if (!video_backend.empty()) {
+		fprintf(stderr, "[DEBUG] About to set SConfig video backend\n");
 		SConfig::GetInstance().m_strVideoBackend = video_backend;
 		fprintf(stderr, "[DEBUG] Activating video backend: %s\n", video_backend.c_str());
 		VideoBackendBase::ActivateBackend(video_backend);
+		fprintf(stderr, "[DEBUG] Video backend activation complete\n");
 	}
 #ifdef IS_PLAYBACK
+	fprintf(stderr, "[DEBUG] Processing Slippi configuration\n");
 	if (!slippi_input.empty()) {
+		fprintf(stderr, "[DEBUG] About to set Slippi input\n");
 		SConfig::GetInstance().m_strSlippiInput = slippi_input;
 		fprintf(stderr, "[DEBUG] Set Slippi input to: %s\n", slippi_input.c_str());
 	} else {
+		fprintf(stderr, "[DEBUG] About to set default Slippi input\n");
 		SConfig::GetInstance().m_strSlippiInput = "Slippi/playback.txt";
 		fprintf(stderr, "[DEBUG] Using default Slippi input: Slippi/playback.txt\n");
 	}
 	if (hide_seekbar) {
+		fprintf(stderr, "[DEBUG] About to set hide seekbar config\n");
 		SConfig::GetInstance().m_CLIHideSeekbar = true;
 		fprintf(stderr, "[DEBUG] Hide seekbar enabled in config\n");
 	}
 	if (enable_cout) {
+		fprintf(stderr, "[DEBUG] About to set cout config\n");
 		SConfig::GetInstance().m_coutEnabled = true;
 		fprintf(stderr, "[DEBUG] Cout enabled in config\n");
 	}
+	fprintf(stderr, "[DEBUG] Slippi configuration complete\n");
 #endif
 
-	fprintf(stderr, "[DEBUG] Initializing UICommon\n");
+	fprintf(stderr, "[DEBUG] Configuration setup complete, about to initialize UICommon\n");
+	fprintf(stderr, "[DEBUG] Setting user directory\n");
 	UICommon::SetUserDirectory("");  // Auto-detect user folder
+	fprintf(stderr, "[DEBUG] User directory set, calling UICommon::Init()\n");
 	UICommon::Init();
 	fprintf(stderr, "[DEBUG] UICommon initialization complete\n");
 
