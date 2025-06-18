@@ -102,14 +102,22 @@ void VideoBackendBase::PopulateList()
 #endif
 	}
 
-	// Disable software video backend as is currently not working
-	// g_available_video_backends.push_back(std::make_unique<SW::VideoSoftware>());
+	// Enable software video backend for headless operation
+	g_available_video_backends.push_back(std::make_unique<SW::VideoSoftware>());
+
+	// DEBUG: Print available backends
+	printf("[DEBUG] Available video backends:\n");
+	for (size_t i = 0; i < g_available_video_backends.size(); ++i)
+	{
+		printf("[DEBUG]   %zu: %s\n", i, g_available_video_backends[i]->GetName().c_str());
+	}
 
 	for (auto &backend : g_available_video_backends)
 	{
 		if (backend)
 		{
 			s_default_backend = g_video_backend = backend.get();
+			printf("[DEBUG] Set default backend to: %s\n", backend->GetName().c_str());
 			break;
 		}
 	}
