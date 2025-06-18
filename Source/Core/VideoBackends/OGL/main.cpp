@@ -133,16 +133,29 @@ void VideoBackend::InitBackendInfo()
 
 bool VideoBackend::Initialize(void* window_handle)
 {
+	fprintf(stderr, "[OGL DEBUG] VideoBackend::Initialize called with window_handle: %p\n", window_handle);
 	if (window_handle == nullptr)
+	{
+		fprintf(stderr, "[OGL DEBUG] window_handle is nullptr, returning false\n");
 		return false;
+	}
 
+	fprintf(stderr, "[OGL DEBUG] Calling InitializeShared()\n");
 	InitializeShared();
+	fprintf(stderr, "[OGL DEBUG] Calling InitBackendInfo()\n");
 	InitBackendInfo();
 
+	fprintf(stderr, "[OGL DEBUG] Calling InitInterface()\n");
 	InitInterface();
+	fprintf(stderr, "[OGL DEBUG] Setting GLInterface mode to MODE_DETECT\n");
 	GLInterface->SetMode(GLInterfaceMode::MODE_DETECT);
+	fprintf(stderr, "[OGL DEBUG] About to call GLInterface->Create()\n");
 	if (!GLInterface->Create(window_handle))
+	{
+		fprintf(stderr, "[OGL DEBUG] GLInterface->Create() failed\n");
 		return false;
+	}
+	fprintf(stderr, "[OGL DEBUG] GLInterface->Create() succeeded\n");
 
 	return true;
 }
@@ -151,18 +164,30 @@ bool VideoBackend::Initialize(void* window_handle)
 // Run from the graphics thread
 void VideoBackend::Video_Prepare()
 {
+	fprintf(stderr, "[OGL DEBUG] VideoBackend::Video_Prepare called\n");
+	fprintf(stderr, "[OGL DEBUG] Calling GLInterface->MakeCurrent()\n");
 	GLInterface->MakeCurrent();
 
+	fprintf(stderr, "[OGL DEBUG] Creating Renderer\n");
 	g_renderer = std::make_unique<Renderer>();
 
+	fprintf(stderr, "[OGL DEBUG] Creating VertexManager\n");
 	g_vertex_manager = std::make_unique<VertexManager>();
+	fprintf(stderr, "[OGL DEBUG] Getting PerfQuery\n");
 	g_perf_query = GetPerfQuery();
+	fprintf(stderr, "[OGL DEBUG] Initializing ProgramShaderCache\n");
 	ProgramShaderCache::Init();
+	fprintf(stderr, "[OGL DEBUG] Creating TextureCache\n");
 	g_texture_cache = std::make_unique<TextureCache>();
+	fprintf(stderr, "[OGL DEBUG] Creating SamplerCache\n");
 	g_sampler_cache = std::make_unique<SamplerCache>();
+	fprintf(stderr, "[OGL DEBUG] Calling g_renderer->Init()\n");
 	g_renderer->Init();
+	fprintf(stderr, "[OGL DEBUG] Initializing TextureConverter\n");
 	TextureConverter::Init();
+	fprintf(stderr, "[OGL DEBUG] Initializing BBox\n");
 	BBox::Init();
+	fprintf(stderr, "[OGL DEBUG] Video_Prepare completed successfully\n");
 }
 
 void VideoBackend::Shutdown()

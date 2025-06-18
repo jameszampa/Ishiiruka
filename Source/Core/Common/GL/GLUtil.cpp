@@ -15,7 +15,16 @@ static GLuint attributelessVBO = 0;
 
 void InitInterface()
 {
+	fprintf(stderr, "[GL DEBUG] InitInterface() called\n");
 	GLInterface = HostGL_CreateGLInterface();
+	if (GLInterface)
+	{
+		fprintf(stderr, "[GL DEBUG] GLInterface created successfully\n");
+	}
+	else
+	{
+		fprintf(stderr, "[GL DEBUG] Failed to create GLInterface\n");
+	}
 }
 
 GLuint OpenGL_CompileProgram(const std::string& vertexShader, const std::string& fragmentShader)
