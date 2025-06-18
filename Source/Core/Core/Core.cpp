@@ -195,6 +195,7 @@ void DisplayMessage(const std::string &message, int time_in_ms)
 
 bool IsRunning()
 {
+	fprintf(stderr, "[CORE DEBUG] IsRunning() called: GetState()=%d, s_hardware_initialized=%d, s_is_stopping=%d\n", GetState(), s_hardware_initialized, s_is_stopping);
 	return (GetState() != CORE_UNINITIALIZED || s_hardware_initialized) && !s_is_stopping;
 }
 
@@ -238,12 +239,14 @@ bool IsGPUThread()
 // BootManager.cpp
 bool Init()
 {
+	fprintf(stderr, "[CORE DEBUG] Core::Init() called\n");
 	const SConfig &_CoreParameter = SConfig::GetInstance();
 
 	if (s_emu_thread.joinable())
 	{
 		if (IsRunning())
 		{
+			fprintf(stderr, "[CORE DEBUG] Emu Thread already running\n");
 			PanicAlertT("Emu Thread already running");
 			return false;
 		}
@@ -278,6 +281,7 @@ bool Init()
 	g_video_backend->PrepareWindow(s_window_handle);
 
 	// Start the emu thread
+	fprintf(stderr, "[CORE DEBUG] Starting EmuThread\n");
 	s_emu_thread = std::thread(EmuThread);
 
 	return true;
@@ -487,6 +491,7 @@ static void FifoPlayerThread()
 // See the BootManager.cpp file description for a complete call schedule.
 void EmuThread()
 {
+	fprintf(stderr, "[CORE DEBUG] EmuThread started\n");
 	const SConfig &core_parameter = SConfig::GetInstance();
 	s_is_booting.Set();
 
@@ -508,6 +513,7 @@ void EmuThread()
 	if (!video_backend->Initialize(s_window_handle))
 	{
 		s_is_booting.Clear();
+		fprintf(stderr, "[CORE DEBUG] Failed to initialize video backend!\n");
 		PanicAlert("Failed to initialize video backend!");
 		Host_Message(WM_USER_STOP);
 		return;
@@ -525,6 +531,7 @@ void EmuThread()
 		s_is_booting.Clear();
 		HW::Shutdown();
 		video_backend->Shutdown();
+		fprintf(stderr, "[CORE DEBUG] Failed to initialize DSP emulation!\n");
 		PanicAlert("Failed to initialize DSP emulation!");
 		Host_Message(WM_USER_STOP);
 		return;
@@ -702,6 +709,7 @@ void EmuThread()
 
 void SetState(EState state)
 {
+	fprintf(stderr, "[CORE DEBUG] SetState called: %d\n", state);
 	// State cannot be controlled until the CPU Thread is operational
 	if (!IsRunningAndStarted())
 		return;
