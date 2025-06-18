@@ -44,6 +44,7 @@ RUN apt-get update && \
     libwxgtk3.0-gtk3-dev \
     libwxgtk3.0-gtk3-0v5 \
     libgtk2.0-dev \
+    libasound2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust and initialize environment
@@ -77,7 +78,4 @@ RUN cd Ishiiruka && \
     cmake -DRust_COMPILER=/root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc -B build && \
     ./build-linux-headless.sh playback
 
-COPY start.sh /opt/start.sh
-RUN chmod +x /opt/start.sh
-
-ENTRYPOINT ["/opt/start.sh"]
+ENTRYPOINT ["/opt/Ishiiruka/build/Binaries/dolphin-emu-nogui"]

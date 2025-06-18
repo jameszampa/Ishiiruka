@@ -375,18 +375,59 @@ static Platform* GetPlatform()
 
 int main(int argc, char* argv[])
 {
-	int ch, help = 0;
-	struct option longopts[] = { { "exec", no_argument, nullptr, 'e' },
-	{ "help", no_argument, nullptr, 'h' },
-	{ "version", no_argument, nullptr, 'v' },
-	{ nullptr, 0, nullptr, 0 } };
+	int help = 0;
+	std::string exec_file;
+	std::string output_directory;
+	std::string output_filename_base;
+	std::string video_backend;
+#ifdef IS_PLAYBACK
+	std::string slippi_input;
+	bool hide_seekbar = false;
+	bool enable_cout = false;
+#endif
 
-	while ((ch = getopt_long(argc, argv, "eh?v", longopts, 0)) != -1)
+	struct option longopts[] = {
+		{ "exec", required_argument, nullptr, 'e' },
+		{ "help", no_argument, nullptr, 'h' },
+		{ "version", no_argument, nullptr, 'v' },
+		{ "output-directory", required_argument, nullptr, 'd' },
+		{ "output-filename-base", required_argument, nullptr, 'o' },
+		{ "video_backend", required_argument, nullptr, 'b' },
+#ifdef IS_PLAYBACK
+		{ "slippi-input", required_argument, nullptr, 'i' },
+		{ "hide-seekbar", no_argument, nullptr, 1000 },
+		{ "cout", no_argument, nullptr, 1001 },
+#endif
+		{ nullptr, 0, nullptr, 0 }
+	};
+
+	int opt;
+	int longindex = 0;
+	while ((opt = getopt_long(argc, argv, "e:hvd:o:b:" 
+#ifdef IS_PLAYBACK
+		"i:"
+#endif
+		, longopts, &longindex)) != -1)
 	{
-		switch (ch)
+		switch (opt)
 		{
 		case 'e':
+			exec_file = optarg;
 			break;
+		case 'd':
+			output_directory = optarg;
+			break;
+		case 'o':
+			output_filename_base = optarg;
+			break;
+		case 'b':
+			video_backend = optarg;
+			break;
+#ifdef IS_PLAYBACK
+		case 'i':
+			slippi_input = optarg;
+			break;
+#endif
 		case 'h':
 		case '?':
 			help = 1;
@@ -394,19 +435,65 @@ int main(int argc, char* argv[])
 		case 'v':
 			fprintf(stderr, "%s\n", scm_rev_str.c_str());
 			return 1;
+#ifdef IS_PLAYBACK
+		case 1000: // --hide-seekbar
+			hide_seekbar = true;
+			break;
+		case 1001: // --cout
+			enable_cout = true;
+			break;
+#endif
 		}
 	}
 
-	if (help == 1 || argc == optind)
+	if (help == 1 || (exec_file.empty() && argc == optind))
 	{
 		fprintf(stderr, "%s\n\n", scm_rev_str.c_str());
 		fprintf(stderr, "A multi-platform GameCube/Wii emulator\n\n");
-		fprintf(stderr, "Usage: %s [-e <file>] [-h] [-v]\n", argv[0]);
-		fprintf(stderr, "  -e, --exec     Load the specified file\n");
-		fprintf(stderr, "  -h, --help     Show this help message\n");
-		fprintf(stderr, "  -v, --version  Print version and exit\n");
+		fprintf(stderr, "Usage: %s [options] -e <file>\n", argv[0]);
+		fprintf(stderr, "  -e, --exec <file>           Load the specified file\n");
+		fprintf(stderr, "  -d, --output-directory DIR  Directory for dump files\n");
+		fprintf(stderr, "  -o, --output-filename-base  Base name for dump files\n");
+		fprintf(stderr, "  -b, --video_backend NAME    Video backend to use\n");
+#ifdef IS_PLAYBACK
+		fprintf(stderr, "  -i, --slippi-input FILE     Path to Slippi replay config file\n");
+		fprintf(stderr, "      --hide-seekbar          Hide seekbar during playback\n");
+		fprintf(stderr, "      --cout                  Enable cout during playback\n");
+#endif
+		fprintf(stderr, "  -h, --help                 Show this help message\n");
+		fprintf(stderr, "  -v, --version              Print version and exit\n");
 		return 1;
 	}
+
+	// Set config fields before UICommon::Init
+	if (!output_directory.empty()) {
+		if (output_directory.back() != '/' && output_directory.back() != '\\')
+			output_directory += "/";
+		SConfig::GetInstance().m_strOutputDirectory = output_directory;
+	}
+	if (!output_filename_base.empty()) {
+		SConfig::GetInstance().m_strOutputFilenameBase = output_filename_base;
+	}
+	if (!video_backend.empty()) {
+		SConfig::GetInstance().m_strVideoBackend = video_backend;
+		VideoBackendBase::ActivateBackend(video_backend);
+	}
+#ifdef IS_PLAYBACK
+	if (!slippi_input.empty()) {
+		SConfig::GetInstance().m_strSlippiInput = slippi_input;
+	} else {
+		SConfig::GetInstance().m_strSlippiInput = "Slippi/playback.txt";
+	}
+	if (hide_seekbar) {
+		SConfig::GetInstance().m_CLIHideSeekbar = true;
+	}
+	if (enable_cout) {
+		SConfig::GetInstance().m_coutEnabled = true;
+	}
+#endif
+
+	UICommon::SetUserDirectory("");  // Auto-detect user folder
+	UICommon::Init();
 
 	platform = GetPlatform();
 	if (!platform)
@@ -414,9 +501,6 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "No platform found\n");
 		return 1;
 	}
-
-	UICommon::SetUserDirectory("");  // Auto-detect user folder
-	UICommon::Init();
 
 	Core::SetOnStoppedCallback([]() { s_running.Clear(); });
 	platform->Init();
@@ -431,9 +515,18 @@ int main(int argc, char* argv[])
 
 	DolphinAnalytics::Instance()->ReportDolphinStart("nogui");
 
-	if (!BootManager::BootCore(argv[optind]))
+	// Use exec_file if provided, otherwise fallback to argv[optind]
+	const char* boot_file = nullptr;
+	if (!exec_file.empty())
+		boot_file = exec_file.c_str();
+	else if (argc > optind)
+		boot_file = argv[optind];
+	else
+		boot_file = nullptr;
+
+	if (!boot_file || !BootManager::BootCore(boot_file))
 	{
-		fprintf(stderr, "Could not boot %s\n", argv[optind]);
+		fprintf(stderr, "Could not boot %s\n", boot_file ? boot_file : "(none)");
 		return 1;
 	}
 
