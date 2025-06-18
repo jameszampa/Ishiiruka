@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#ifndef USE_HEADLESS
 #include <wx/app.h>
 #include <wx/buffer.h>
 #include <wx/cmdline.h>
@@ -23,6 +24,7 @@
 #include <wx/tooltip.h>
 #include <wx/utils.h>
 #include <wx/window.h>
+#endif
 
 #include "Common/CPUDetect.h"
 #include "Common/CommonPaths.h"
