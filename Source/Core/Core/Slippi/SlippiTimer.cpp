@@ -1,3 +1,4 @@
+#ifndef USE_HEADLESS
 #include "SlippiTimer.h"
 #include "DolphinWX/Frame.h"
 #include "SlippiPlayback.h"
@@ -42,3 +43,4 @@ void SlippiTimer::Notify()
 		m_slider->SetValue(g_playbackStatus->currentPlaybackFrame);
 	}
 }
+#endif

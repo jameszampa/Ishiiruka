@@ -1,3 +1,4 @@
+#ifndef USE_HEADLESS
 #ifndef SLIPPI_TIMER_HEADER
 #define SLIPPI_TIMER_HEADER
 
@@ -24,4 +25,5 @@ class SlippiTimer : public wxTimer
 	wxStaticText *m_text;
 };
 
+#endif
 #endif
