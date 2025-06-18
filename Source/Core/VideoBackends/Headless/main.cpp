@@ -18,6 +18,7 @@
 
 #include "VideoCommon/BPStructs.h"
 #include "VideoCommon/CommandProcessor.h"
+#include "VideoCommon/CPMemory.h"
 #include "VideoCommon/Fifo.h"
 #include "VideoCommon/FramebufferManagerBase.h"
 #include "VideoCommon/IndexGenerator.h"
@@ -29,6 +30,7 @@
 #include "VideoCommon/VertexLoaderManager.h"
 #include "VideoCommon/VertexShaderManager.h"
 #include "VideoCommon/VideoConfig.h"
+#include "VideoCommon/Debugger.h"
 
 namespace Headless
 {
@@ -179,11 +181,8 @@ bool VideoBackend::Initialize(void *window_handle)
 	g_Config.VerifyValidity();
 	UpdateActiveConfig();
 
-	HeadlessRenderer::Init();
-
 	PixelEngine::Init();
-	HeadlessRenderer::Init();
-	DebugUtil::Init();
+	Debugger::Init();
 
 	// Do our OSD callbacks
 	OSD::DoCallbacks(OSD::CallbackType::Initialization);
@@ -200,38 +199,24 @@ void VideoBackend::Shutdown()
 	// Do our OSD callbacks
 	OSD::DoCallbacks(OSD::CallbackType::Shutdown);
 
-	HeadlessRenderer::Shutdown();
+	ShutdownShared();
 }
 
-void VideoBackend::Video_Cleanup()
-{
-	if (g_renderer)
-	{
-		Fifo::Shutdown();
-		g_renderer->Shutdown();
-		DebugUtil::Shutdown();
-		// The following calls are NOT Thread Safe
-		// And need to be called from the video thread
-		g_renderer->Shutdown();
-		VertexLoaderManager::Shutdown();
-		g_framebuffer_manager.reset();
-		g_texture_cache.reset();
-		g_perf_query.reset();
-		g_vertex_manager.reset();
-		g_renderer.reset();
-	}
-}
-
-// This is called after Video_Initialize() from the Core
 void VideoBackend::Video_Prepare()
 {
+	// Create renderer instance
 	g_renderer = std::make_unique<HeadlessRenderer>();
 
 	CommandProcessor::Init();
 	PixelEngine::Init();
 
 	BPInit();
-	g_vertex_manager = std::make_unique<HeadlessVertexLoader>();
+	
+	// Create default vertex loader with empty vertex description
+	TVtxDesc vtx_desc = {};
+	VAT vat = {};
+	g_vertex_manager = std::make_unique<HeadlessVertexLoader>(vtx_desc, vat);
+	
 	g_perf_query = std::make_unique<PerfQuery>();
 	Fifo::Init(); // must be done before OpcodeDecoder_Init()
 	OpcodeDecoder::Init();
@@ -249,6 +234,25 @@ void VideoBackend::Video_Prepare()
 	INFO_LOG(VIDEO, "Headless video backend initialized.");
 }
 
+void VideoBackend::Video_Cleanup()
+{
+	if (g_renderer)
+	{
+		Fifo::Shutdown();
+		g_renderer->Shutdown();
+		Debugger::Shutdown();
+		// The following calls are NOT Thread Safe
+		// And need to be called from the video thread
+		g_renderer->Shutdown();
+		VertexLoaderManager::Shutdown();
+		g_framebuffer_manager.reset();
+		g_texture_cache.reset();
+		g_perf_query.reset();
+		g_vertex_manager.reset();
+		g_renderer.reset();
+	}
+}
+
 unsigned int VideoBackend::PeekMessages()
 {
 	// No window messages to process in headless mode
@@ -260,4 +264,4 @@ void VideoBackend::PrepareWindow(void* window_handle)
 	// No window preparation needed in headless mode
 }
 
-} 
+} // namespace Headless 

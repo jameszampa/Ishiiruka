@@ -24,6 +24,8 @@
 #include "VideoCommon/VideoConfig.h"
 #include "VideoCommon/VideoCommon.h"
 #include "VideoCommon/FramebufferManagerBase.h"
+#include "VideoCommon/PostProcessing.h"
+#include "VideoCommon/XFStructs.h"
 
 namespace Headless
 {
