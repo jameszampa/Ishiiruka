@@ -38,7 +38,7 @@
 #include "Core/PowerPC/PowerPC.h"
 
 // Not clean but idk a better way atm
-#ifndef ENABLE_HEADLESS
+#ifndef USE_HEADLESS
 #include "DolphinWX/Frame.h"
 #include "DolphinWX/Main.h"
 #endif
