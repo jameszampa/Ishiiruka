@@ -278,6 +278,7 @@ bool Init()
 	// Issue any API calls which must occur on the main thread for the graphics
 	// backend. This currently is only used for macOS, as the CAMetalLayer
 	// components need to run on the main thread.
+	fprintf(stderr, "[CORE DEBUG] About to prepare video backend window\n");
 	g_video_backend->PrepareWindow(s_window_handle);
 
 	// Start the emu thread
@@ -497,6 +498,7 @@ void EmuThread()
 
 	Common::SetCurrentThreadName("Emuthread - Starting");
 	VideoBackendBase *video_backend = g_video_backend;
+	fprintf(stderr, "[CORE DEBUG] Using video backend: %s\n", video_backend->GetName().c_str());
 	if (SConfig::GetInstance().m_OCEnable)
 		DisplayMessage("WARNING: running at non-native CPU clock! Game may not be stable.", 8000);
 	DisplayMessage(cpu_info.brand_string, 8000);
@@ -510,14 +512,16 @@ void EmuThread()
 
 	HW::Init();
 
+	fprintf(stderr, "[CORE DEBUG] About to initialize video backend: %s\n", video_backend->GetName().c_str());
 	if (!video_backend->Initialize(s_window_handle))
 	{
 		s_is_booting.Clear();
-		fprintf(stderr, "[CORE DEBUG] Failed to initialize video backend!\n");
+		fprintf(stderr, "[CORE DEBUG] Failed to initialize video backend: %s\n", video_backend->GetName().c_str());
 		PanicAlert("Failed to initialize video backend!");
 		Host_Message(WM_USER_STOP);
 		return;
 	}
+	fprintf(stderr, "[CORE DEBUG] Video backend initialized successfully: %s\n", video_backend->GetName().c_str());
 
 	OSD::AddMessage("Dolphin " + video_backend->GetName() + " Video Backend.", 5000);
 
