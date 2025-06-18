@@ -63,12 +63,10 @@ ENV RUSTUP_TOOLCHAIN="stable-x86_64-unknown-linux-gnu"
 
 WORKDIR /opt
 
-RUN git clone https://github.com/project-slippi/Ishiiruka.git && \
+RUN git clone https://github.com/jameszampa/Ishiiruka.git && \
     cd Ishiiruka && \
+    git checkout feature/headless-playback && \
     git submodule update --init --recursive
-
-COPY build-linux-headless.sh /opt/Ishiiruka/build-linux-headless.sh
-RUN chmod +x /opt/Ishiiruka/build-linux-headless.sh
 
 # Verify Rust installation and build
 RUN cd Ishiiruka && \

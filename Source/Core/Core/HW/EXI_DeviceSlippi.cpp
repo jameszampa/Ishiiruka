@@ -38,9 +38,10 @@
 #include "Core/PowerPC/PowerPC.h"
 
 // Not clean but idk a better way atm
+#ifndef ENABLE_HEADLESS
 #include "DolphinWX/Frame.h"
 #include "DolphinWX/Main.h"
-
+#endif
 // The Rust library that houses a "shadow" EXI Device that we can call into.
 #include "SlippiRustExtensions.h"
 
