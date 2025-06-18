@@ -482,13 +482,17 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	fprintf(stderr, "[DEBUG] Setting up configuration\n");
-	// Set config fields before UICommon::Init
+	fprintf(stderr, "[DEBUG] Setting user directory\n");
+	UICommon::SetUserDirectory("");  // Auto-detect user folder
+	fprintf(stderr, "[DEBUG] User directory set, calling UICommon::Init()\n");
+	UICommon::Init();
+	fprintf(stderr, "[DEBUG] UICommon initialization complete\n");
+
+	fprintf(stderr, "[DEBUG] Setting up configuration (after UICommon::Init)\n");
 	if (!output_directory.empty()) {
 		fprintf(stderr, "[DEBUG] Processing output_directory: %s\n", output_directory.c_str());
 		if (output_directory.back() != '/' && output_directory.back() != '\\')
 			output_directory += "/";
-		fprintf(stderr, "[DEBUG] About to set SConfig output directory\n");
 		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance()\n");
 		SConfig& config = SConfig::GetInstance();
 		fprintf(stderr, "[DEBUG] SConfig::GetInstance() completed successfully\n");
@@ -555,13 +559,6 @@ int main(int argc, char* argv[])
 	}
 	fprintf(stderr, "[DEBUG] Slippi configuration complete\n");
 #endif
-
-	fprintf(stderr, "[DEBUG] Configuration setup complete, about to initialize UICommon\n");
-	fprintf(stderr, "[DEBUG] Setting user directory\n");
-	UICommon::SetUserDirectory("");  // Auto-detect user folder
-	fprintf(stderr, "[DEBUG] User directory set, calling UICommon::Init()\n");
-	UICommon::Init();
-	fprintf(stderr, "[DEBUG] UICommon initialization complete\n");
 
 	fprintf(stderr, "[DEBUG] Getting platform\n");
 	platform = GetPlatform();
