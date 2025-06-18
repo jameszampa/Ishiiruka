@@ -15,9 +15,9 @@
 namespace Headless
 {
 
-HeadlessVertexFormat::HeadlessVertexFormat(const PortableVertexDeclaration& vtx_decl)
+HeadlessVertexFormat::HeadlessVertexFormat(const PortableVertexDeclaration& vtx_decl_param)
 {
-	vtx_decl = vtx_decl;
+	vtx_decl = vtx_decl_param;
 }
 
 HeadlessVertexFormat::~HeadlessVertexFormat()

@@ -12,7 +12,6 @@
 #include "VideoCommon/AVIDump.h"
 
 // Forward declarations
-struct EFBRectangle;
 struct EFBCopyFormat;
 class PostProcessor;
 class XFBSourceBase;
