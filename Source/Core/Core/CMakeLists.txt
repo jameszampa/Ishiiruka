@@ -272,7 +272,7 @@ if(LIBUSB_FOUND)
 					   	IPC_HLE/WII_IPC_HLE_Device_usb_bt_real.cpp)
 endif(LIBUSB_FOUND)
 
-set(LIBS ${LIBS} videovulkan)
+set(LIBS ${LIBS} videovulkan videocommon)
 
 set(LIBS ${LIBS} ${MBEDTLS_LIBRARIES})
 
