@@ -1,1 +1,1 @@
-docker run --gpus all --rm -v C:\SSBM\SSBM.iso:/iso/SSBM.iso -v C:\Users\bigzeekv-4090-1\Documents\Slippi\2025-06:/replays -v .\docker_output:/outputs slippi-rendering:0.2.0 -e /iso/SSBM.iso -d /outputs -o game -i /outputs/playback.json --hide-seekbar --cout 
+docker run --gpus all --rm -v C:\SSBM\SSBM.iso:/iso/SSBM.iso -v C:\Users\bigzeekv-4090-1\Documents\Slippi\2025-06:/replays -v .\docker_output:/outputs -v .\playback.json:/replays/playback.json slippi-rendering:0.2.0 -e /iso/SSBM.iso -d /outputs -o game -i /outputs/playback.json --hide-seekbar --cout 

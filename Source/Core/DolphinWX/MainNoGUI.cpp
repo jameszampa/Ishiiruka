@@ -489,17 +489,29 @@ int main(int argc, char* argv[])
 		if (output_directory.back() != '/' && output_directory.back() != '\\')
 			output_directory += "/";
 		fprintf(stderr, "[DEBUG] About to set SConfig output directory\n");
-		SConfig::GetInstance().m_strOutputDirectory = output_directory;
+		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance()\n");
+		SConfig& config = SConfig::GetInstance();
+		fprintf(stderr, "[DEBUG] SConfig::GetInstance() completed successfully\n");
+		fprintf(stderr, "[DEBUG] About to assign to m_strOutputDirectory\n");
+		config.m_strOutputDirectory = output_directory;
 		fprintf(stderr, "[DEBUG] Set SConfig output directory to: %s\n", output_directory.c_str());
 	}
 	if (!output_filename_base.empty()) {
 		fprintf(stderr, "[DEBUG] About to set SConfig output filename base\n");
-		SConfig::GetInstance().m_strOutputFilenameBase = output_filename_base;
+		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for filename base\n");
+		SConfig& config = SConfig::GetInstance();
+		fprintf(stderr, "[DEBUG] SConfig::GetInstance() for filename base completed\n");
+		fprintf(stderr, "[DEBUG] About to assign to m_strOutputFilenameBase\n");
+		config.m_strOutputFilenameBase = output_filename_base;
 		fprintf(stderr, "[DEBUG] Set SConfig output filename base to: %s\n", output_filename_base.c_str());
 	}
 	if (!video_backend.empty()) {
 		fprintf(stderr, "[DEBUG] About to set SConfig video backend\n");
-		SConfig::GetInstance().m_strVideoBackend = video_backend;
+		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for video backend\n");
+		SConfig& config = SConfig::GetInstance();
+		fprintf(stderr, "[DEBUG] SConfig::GetInstance() for video backend completed\n");
+		fprintf(stderr, "[DEBUG] About to assign to m_strVideoBackend\n");
+		config.m_strVideoBackend = video_backend;
 		fprintf(stderr, "[DEBUG] Activating video backend: %s\n", video_backend.c_str());
 		VideoBackendBase::ActivateBackend(video_backend);
 		fprintf(stderr, "[DEBUG] Video backend activation complete\n");
@@ -508,21 +520,37 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "[DEBUG] Processing Slippi configuration\n");
 	if (!slippi_input.empty()) {
 		fprintf(stderr, "[DEBUG] About to set Slippi input\n");
-		SConfig::GetInstance().m_strSlippiInput = slippi_input;
+		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for Slippi input\n");
+		SConfig& config = SConfig::GetInstance();
+		fprintf(stderr, "[DEBUG] SConfig::GetInstance() for Slippi input completed\n");
+		fprintf(stderr, "[DEBUG] About to assign to m_strSlippiInput\n");
+		config.m_strSlippiInput = slippi_input;
 		fprintf(stderr, "[DEBUG] Set Slippi input to: %s\n", slippi_input.c_str());
 	} else {
 		fprintf(stderr, "[DEBUG] About to set default Slippi input\n");
-		SConfig::GetInstance().m_strSlippiInput = "Slippi/playback.txt";
+		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for default Slippi input\n");
+		SConfig& config = SConfig::GetInstance();
+		fprintf(stderr, "[DEBUG] SConfig::GetInstance() for default Slippi input completed\n");
+		fprintf(stderr, "[DEBUG] About to assign to m_strSlippiInput (default)\n");
+		config.m_strSlippiInput = "Slippi/playback.txt";
 		fprintf(stderr, "[DEBUG] Using default Slippi input: Slippi/playback.txt\n");
 	}
 	if (hide_seekbar) {
 		fprintf(stderr, "[DEBUG] About to set hide seekbar config\n");
-		SConfig::GetInstance().m_CLIHideSeekbar = true;
+		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for hide seekbar\n");
+		SConfig& config = SConfig::GetInstance();
+		fprintf(stderr, "[DEBUG] SConfig::GetInstance() for hide seekbar completed\n");
+		fprintf(stderr, "[DEBUG] About to assign to m_CLIHideSeekbar\n");
+		config.m_CLIHideSeekbar = true;
 		fprintf(stderr, "[DEBUG] Hide seekbar enabled in config\n");
 	}
 	if (enable_cout) {
 		fprintf(stderr, "[DEBUG] About to set cout config\n");
-		SConfig::GetInstance().m_coutEnabled = true;
+		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for cout\n");
+		SConfig& config = SConfig::GetInstance();
+		fprintf(stderr, "[DEBUG] SConfig::GetInstance() for cout completed\n");
+		fprintf(stderr, "[DEBUG] About to assign to m_coutEnabled\n");
+		config.m_coutEnabled = true;
 		fprintf(stderr, "[DEBUG] Cout enabled in config\n");
 	}
 	fprintf(stderr, "[DEBUG] Slippi configuration complete\n");
