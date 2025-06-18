@@ -375,6 +375,8 @@ static Platform* GetPlatform()
 
 int main(int argc, char* argv[])
 {
+	fprintf(stderr, "[DEBUG] MainNoGUI starting with %d arguments\n", argc);
+	
 	int help = 0;
 	std::string exec_file;
 	std::string output_directory;
@@ -401,6 +403,7 @@ int main(int argc, char* argv[])
 		{ nullptr, 0, nullptr, 0 }
 	};
 
+	fprintf(stderr, "[DEBUG] Starting argument parsing\n");
 	int opt;
 	int longindex = 0;
 	while ((opt = getopt_long(argc, argv, "e:hvd:o:b:" 
@@ -409,45 +412,59 @@ int main(int argc, char* argv[])
 #endif
 		, longopts, &longindex)) != -1)
 	{
+		fprintf(stderr, "[DEBUG] Parsed option: %c (optarg: %s)\n", opt, optarg ? optarg : "null");
 		switch (opt)
 		{
 		case 'e':
 			exec_file = optarg;
+			fprintf(stderr, "[DEBUG] Set exec_file to: %s\n", exec_file.c_str());
 			break;
 		case 'd':
 			output_directory = optarg;
+			fprintf(stderr, "[DEBUG] Set output_directory to: %s\n", output_directory.c_str());
 			break;
 		case 'o':
 			output_filename_base = optarg;
+			fprintf(stderr, "[DEBUG] Set output_filename_base to: %s\n", output_filename_base.c_str());
 			break;
 		case 'b':
 			video_backend = optarg;
+			fprintf(stderr, "[DEBUG] Set video_backend to: %s\n", video_backend.c_str());
 			break;
 #ifdef IS_PLAYBACK
 		case 'i':
 			slippi_input = optarg;
+			fprintf(stderr, "[DEBUG] Set slippi_input to: %s\n", slippi_input.c_str());
 			break;
 #endif
 		case 'h':
 		case '?':
 			help = 1;
+			fprintf(stderr, "[DEBUG] Help requested\n");
 			break;
 		case 'v':
+			fprintf(stderr, "[DEBUG] Version requested\n");
 			fprintf(stderr, "%s\n", scm_rev_str.c_str());
 			return 1;
 #ifdef IS_PLAYBACK
 		case 1000: // --hide-seekbar
 			hide_seekbar = true;
+			fprintf(stderr, "[DEBUG] Hide seekbar enabled\n");
 			break;
 		case 1001: // --cout
 			enable_cout = true;
+			fprintf(stderr, "[DEBUG] Cout enabled\n");
 			break;
 #endif
 		}
 	}
 
+	fprintf(stderr, "[DEBUG] Argument parsing complete. help=%d, exec_file='%s', optind=%d, argc=%d\n", 
+		help, exec_file.c_str(), optind, argc);
+
 	if (help == 1 || (exec_file.empty() && argc == optind))
 	{
+		fprintf(stderr, "[DEBUG] Showing help message\n");
 		fprintf(stderr, "%s\n\n", scm_rev_str.c_str());
 		fprintf(stderr, "A multi-platform GameCube/Wii emulator\n\n");
 		fprintf(stderr, "Usage: %s [options] -e <file>\n", argv[0]);
@@ -465,45 +482,59 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	fprintf(stderr, "[DEBUG] Setting up configuration\n");
 	// Set config fields before UICommon::Init
 	if (!output_directory.empty()) {
 		if (output_directory.back() != '/' && output_directory.back() != '\\')
 			output_directory += "/";
 		SConfig::GetInstance().m_strOutputDirectory = output_directory;
+		fprintf(stderr, "[DEBUG] Set SConfig output directory to: %s\n", output_directory.c_str());
 	}
 	if (!output_filename_base.empty()) {
 		SConfig::GetInstance().m_strOutputFilenameBase = output_filename_base;
+		fprintf(stderr, "[DEBUG] Set SConfig output filename base to: %s\n", output_filename_base.c_str());
 	}
 	if (!video_backend.empty()) {
 		SConfig::GetInstance().m_strVideoBackend = video_backend;
+		fprintf(stderr, "[DEBUG] Activating video backend: %s\n", video_backend.c_str());
 		VideoBackendBase::ActivateBackend(video_backend);
 	}
 #ifdef IS_PLAYBACK
 	if (!slippi_input.empty()) {
 		SConfig::GetInstance().m_strSlippiInput = slippi_input;
+		fprintf(stderr, "[DEBUG] Set Slippi input to: %s\n", slippi_input.c_str());
 	} else {
 		SConfig::GetInstance().m_strSlippiInput = "Slippi/playback.txt";
+		fprintf(stderr, "[DEBUG] Using default Slippi input: Slippi/playback.txt\n");
 	}
 	if (hide_seekbar) {
 		SConfig::GetInstance().m_CLIHideSeekbar = true;
+		fprintf(stderr, "[DEBUG] Hide seekbar enabled in config\n");
 	}
 	if (enable_cout) {
 		SConfig::GetInstance().m_coutEnabled = true;
+		fprintf(stderr, "[DEBUG] Cout enabled in config\n");
 	}
 #endif
 
+	fprintf(stderr, "[DEBUG] Initializing UICommon\n");
 	UICommon::SetUserDirectory("");  // Auto-detect user folder
 	UICommon::Init();
+	fprintf(stderr, "[DEBUG] UICommon initialization complete\n");
 
+	fprintf(stderr, "[DEBUG] Getting platform\n");
 	platform = GetPlatform();
 	if (!platform)
 	{
-		fprintf(stderr, "No platform found\n");
+		fprintf(stderr, "[ERROR] No platform found\n");
 		return 1;
 	}
+	fprintf(stderr, "[DEBUG] Platform obtained successfully\n");
 
+	fprintf(stderr, "[DEBUG] Setting up core callbacks and initializing platform\n");
 	Core::SetOnStoppedCallback([]() { s_running.Clear(); });
 	platform->Init();
+	fprintf(stderr, "[DEBUG] Platform initialization complete\n");
 
 	// Shut down cleanly on SIGINT and SIGTERM
 	struct sigaction sa;
@@ -512,7 +543,9 @@ int main(int argc, char* argv[])
 	sa.sa_flags = SA_RESETHAND;
 	sigaction(SIGINT, &sa, nullptr);
 	sigaction(SIGTERM, &sa, nullptr);
+	fprintf(stderr, "[DEBUG] Signal handlers set up\n");
 
+	fprintf(stderr, "[DEBUG] Reporting analytics\n");
 	DolphinAnalytics::Instance()->ReportDolphinStart("nogui");
 
 	// Use exec_file if provided, otherwise fallback to argv[optind]
@@ -524,27 +557,44 @@ int main(int argc, char* argv[])
 	else
 		boot_file = nullptr;
 
+	fprintf(stderr, "[DEBUG] Boot file determined: %s\n", boot_file ? boot_file : "(none)");
+
 	if (!boot_file || !BootManager::BootCore(boot_file))
 	{
-		fprintf(stderr, "Could not boot %s\n", boot_file ? boot_file : "(none)");
+		fprintf(stderr, "[ERROR] Could not boot %s\n", boot_file ? boot_file : "(none)");
 		return 1;
 	}
+	fprintf(stderr, "[DEBUG] BootCore completed successfully\n");
 
+	fprintf(stderr, "[DEBUG] Waiting for core to start running\n");
 	while (!Core::IsRunning() && s_running.IsSet())
 	{
 		Core::HostDispatchJobs();
 		updateMainFrameEvent.Wait();
 	}
+	fprintf(stderr, "[DEBUG] Core is now running: %s\n", Core::IsRunning() ? "true" : "false");
 
 	if (s_running.IsSet())
+	{
+		fprintf(stderr, "[DEBUG] Starting main loop\n");
 		platform->MainLoop();
+		fprintf(stderr, "[DEBUG] Main loop exited\n");
+	}
+	else
+	{
+		fprintf(stderr, "[DEBUG] Skipping main loop (not running)\n");
+	}
+	
+	fprintf(stderr, "[DEBUG] Stopping core\n");
 	Core::Stop();
 
+	fprintf(stderr, "[DEBUG] Shutting down\n");
 	Core::Shutdown();
 	platform->Shutdown();
 	UICommon::Shutdown();
 
 	delete platform;
+	fprintf(stderr, "[DEBUG] MainNoGUI exiting normally\n");
 
 	return 0;
 }
