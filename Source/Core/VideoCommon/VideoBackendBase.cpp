@@ -11,6 +11,7 @@
 #include "VideoBackends/DX9/VideoBackend.h"
 
 #endif
+#include "VideoBackends/Headless/VideoBackend.h"
 #include "VideoBackends/OGL/VideoBackend.h"
 #include "VideoBackends/Software/VideoBackend.h"
 #include "VideoBackends/Vulkan/VideoBackend.h"
@@ -101,6 +102,9 @@ void VideoBackendBase::PopulateList()
 		g_available_video_backends.push_back(std::make_unique<Vulkan::VideoBackend>());
 #endif
 	}
+
+	// Add Headless backend for headless operation
+	g_available_video_backends.push_back(std::make_unique<Headless::VideoBackend>());
 
 	// Disable software video backend as is currently not working
 	// g_available_video_backends.push_back(std::make_unique<SW::VideoSoftware>());

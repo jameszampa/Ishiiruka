@@ -261,6 +261,7 @@ set(LIBS
 	vcdenc
 	videoogl
 	videosoftware
+	HeadlessVideoBackend
 	z
 	)
 
