@@ -45,6 +45,7 @@
 #include "Core/GeckoCode.h"
 #include "Core/GeckoCodeConfig.h"
 
+#ifndef USE_HEADLESS
 #include "DolphinWX/Debugger/CodeWindow.h"
 #include "DolphinWX/Debugger/JitWindow.h"
 #include "DolphinWX/Frame.h"
@@ -54,6 +55,7 @@
 #include "DolphinWX/SoftwareVideoConfigDialog.h"
 #include "DolphinWX/VideoConfigDiag.h"
 #include "DolphinWX/WxUtils.h"
+#endif
 
 #include "UICommon/UICommon.h"
 
