@@ -10,9 +10,9 @@ set(HEADLESS_SOURCES
 add_library(HeadlessVideoBackend STATIC ${HEADLESS_SOURCES})
 
 target_link_libraries(HeadlessVideoBackend
-    VideoCommon
-    Common
-    Core
+    videocommon
+    common
+    core
 )
 
 target_include_directories(HeadlessVideoBackend PRIVATE
