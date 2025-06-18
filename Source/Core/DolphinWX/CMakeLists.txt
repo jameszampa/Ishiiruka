@@ -252,7 +252,7 @@ if(wxWidgets_FOUND)
 endif()
 
 # Only build -nogui binaries when ENABLE_HEADLESS is on
-if(USE_X11 AND ENABLE_HEADLESS)
+if(ENABLE_HEADLESS)
 	set(DOLPHIN_NOGUI_EXE ${DOLPHIN_EXE_BASE}-nogui)
 	add_executable(${DOLPHIN_NOGUI_EXE} ${SRCS} ${NOGUI_SRCS})
 	target_link_libraries(${DOLPHIN_NOGUI_EXE} ${LIBS} ${WXLIBS})
