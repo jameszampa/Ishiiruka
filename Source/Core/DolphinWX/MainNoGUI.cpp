@@ -79,6 +79,8 @@ public:
 			if (loopCount % 100 == 0)
 			{
 				fprintf(stderr, "[DEBUG] MainLoop: Still running, iteration %d\n", loopCount);
+				fprintf(stderr, "[DEBUG] MainLoop: Core state: %d, IsRunning: %s\n", 
+					Core::GetState(), Core::IsRunning() ? "true" : "false");
 				
 				// Check if Slippi replay system is active
 #ifdef IS_PLAYBACK
