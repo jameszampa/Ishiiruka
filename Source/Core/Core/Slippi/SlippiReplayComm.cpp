@@ -47,14 +47,9 @@ SlippiReplayComm::~SlippiReplayComm() {}
 SlippiReplayComm::CommSettings SlippiReplayComm::getSettings()
 {
 	fprintf(stderr, "[SLIPPI DEBUG] getSettings() called\n");
-	try {
-		loadFile();
-		fprintf(stderr, "[SLIPPI DEBUG] loadFile() completed successfully\n");
-		return commFileSettings;
-	} catch (const std::exception& e) {
-		fprintf(stderr, "[SLIPPI DEBUG] Exception in getSettings(): %s\n", e.what());
-		throw;
-	}
+	loadFile();
+	fprintf(stderr, "[SLIPPI DEBUG] loadFile() completed successfully\n");
+	return commFileSettings;
 }
 
 std::string SlippiReplayComm::getReplayPath()
@@ -161,7 +156,7 @@ void SlippiReplayComm::loadFile()
 	// TODO: what the perf impact is atm
 
 	u64 modTime = File::GetFileModTime(configFilePath);
-	fprintf(stderr, "[SLIPPI DEBUG] File mod time: %llu, last load mod time: %llu\n", modTime, configLastLoadModTime);
+	fprintf(stderr, "[SLIPPI DEBUG] File mod time: %lu, last load mod time: %lu\n", modTime, configLastLoadModTime);
 	if (modTime != 0 && modTime == configLastLoadModTime)
 	{
 		fprintf(stderr, "[SLIPPI DEBUG] File hasn't changed, returning early\n");
