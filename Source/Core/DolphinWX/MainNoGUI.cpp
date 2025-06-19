@@ -89,13 +89,9 @@ public:
 				if (g_replayComm)
 				{
 					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is initialized\n");
-					try {
-						auto settings = g_replayComm->getSettings();
-						fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s, path: %s\n", 
-							settings.mode.c_str(), settings.replayPath.c_str());
-					} catch (const std::exception& e) {
-						fprintf(stderr, "[DEBUG] MainLoop: Exception getting replay settings: %s\n", e.what());
-					}
+					auto settings = g_replayComm->getSettings();
+					fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s, path: %s\n", 
+						settings.mode.c_str(), settings.replayPath.c_str());
 				}
 				else
 				{
