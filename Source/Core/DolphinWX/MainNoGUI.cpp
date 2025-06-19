@@ -29,6 +29,11 @@
 #include "Core/IPC_HLE/WII_IPC_HLE_WiiMote.h"
 #include "Core/State.h"
 
+#ifdef IS_PLAYBACK
+#include "Core/Slippi/SlippiReplayComm.h"
+#include "Core/Slippi/SlippiPlaybackStatus.h"
+#endif
+
 #include "UICommon/UICommon.h"
 
 #include "VideoCommon/RenderBase.h"
