@@ -3258,6 +3258,7 @@ void CEXISlippi::DMAWrite(u32 _uAddr, u32 _uSize)
 			prepareIsStockSteal(&memPtr[bufLoc + 1]);
 			break;
 		case CMD_IS_FILE_READY:
+			fprintf(stderr, "[SLIPPI DEBUG] Received CMD_IS_FILE_READY command\n");
 			prepareIsFileReady();
 			break;
 		case CMD_GET_GECKO_CODES:
