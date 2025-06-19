@@ -35,16 +35,26 @@ static inline void trim(std::string &s)
 
 SlippiReplayComm::SlippiReplayComm()
 {
+	fprintf(stderr, "[SLIPPI DEBUG] SlippiReplayComm constructor called\n");
 	INFO_LOG(EXPANSIONINTERFACE, "SlippiReplayComm: Using playback config path: %s",
 	         SConfig::GetInstance().m_strSlippiInput.c_str());
 	configFilePath = SConfig::GetInstance().m_strSlippiInput.c_str();
+	fprintf(stderr, "[SLIPPI DEBUG] SlippiReplayComm constructor completed, configFilePath: %s\n", configFilePath.c_str());
 }
 
 SlippiReplayComm::~SlippiReplayComm() {}
 
 SlippiReplayComm::CommSettings SlippiReplayComm::getSettings()
 {
-	return commFileSettings;
+	fprintf(stderr, "[SLIPPI DEBUG] getSettings() called\n");
+	try {
+		loadFile();
+		fprintf(stderr, "[SLIPPI DEBUG] loadFile() completed successfully\n");
+		return commFileSettings;
+	} catch (const std::exception& e) {
+		fprintf(stderr, "[SLIPPI DEBUG] Exception in getSettings(): %s\n", e.what());
+		throw;
+	}
 }
 
 std::string SlippiReplayComm::getReplayPath()
@@ -145,12 +155,16 @@ std::unique_ptr<Slippi::SlippiGame> SlippiReplayComm::loadGame()
 
 void SlippiReplayComm::loadFile()
 {
+	fprintf(stderr, "[SLIPPI DEBUG] loadFile() called, configFilePath: %s\n", configFilePath.c_str());
+	
 	// TODO: Consider even only checking file mod time every 250 ms or something? Not sure
 	// TODO: what the perf impact is atm
 
 	u64 modTime = File::GetFileModTime(configFilePath);
+	fprintf(stderr, "[SLIPPI DEBUG] File mod time: %llu, last load mod time: %llu\n", modTime, configLastLoadModTime);
 	if (modTime != 0 && modTime == configLastLoadModTime)
 	{
+		fprintf(stderr, "[SLIPPI DEBUG] File hasn't changed, returning early\n");
 		// TODO: Maybe be smarter than just using mod time? Look for other things that would
 		// TODO: indicate that file has changed and needs to be reloaded?
 		return;
@@ -161,12 +175,17 @@ void SlippiReplayComm::loadFile()
 
 	// TODO: Maybe load file in a more intelligent way to save
 	// TODO: file operations
+	fprintf(stderr, "[SLIPPI DEBUG] About to read file contents\n");
 	std::string commFileContents;
 	File::ReadFileToString(configFilePath, commFileContents);
+	fprintf(stderr, "[SLIPPI DEBUG] File contents read, length: %zu\n", commFileContents.length());
 
+	fprintf(stderr, "[SLIPPI DEBUG] About to parse JSON\n");
 	auto res = json::parse(commFileContents, nullptr, false);
+	fprintf(stderr, "[SLIPPI DEBUG] JSON parsing completed\n");
 	if (res.is_discarded() || !res.is_object())
 	{
+		fprintf(stderr, "[SLIPPI DEBUG] JSON parsing failed or not an object\n");
 		// Happens if there is a parse error, I think?
 		commFileSettings.mode = "normal";
 		commFileSettings.replayPath = "";
@@ -196,9 +215,11 @@ void SlippiReplayComm::loadFile()
 			configLastLoadModTime = 0;
 		}
 
+		fprintf(stderr, "[SLIPPI DEBUG] Using default settings due to parsing error\n");
 		return;
 	}
 
+	fprintf(stderr, "[SLIPPI DEBUG] About to extract settings from JSON\n");
 	// TODO: Support file with only path string
 	commFileSettings.mode = res.value("mode", "normal");
 	commFileSettings.replayPath = res.value("replay", "");
@@ -213,6 +234,7 @@ void SlippiReplayComm::loadFile()
 
 	if (commFileSettings.mode == "queue")
 	{
+		fprintf(stderr, "[SLIPPI DEBUG] Processing queue mode\n");
 		auto queue = res["queue"];
 		if (queue.is_array())
 		{
@@ -235,4 +257,7 @@ void SlippiReplayComm::loadFile()
 			queueWasEmpty = false;
 		}
 	}
+	
+	fprintf(stderr, "[SLIPPI DEBUG] Settings loaded successfully: mode=%s, replayPath=%s\n", 
+		commFileSettings.mode.c_str(), commFileSettings.replayPath.c_str());
 }

@@ -70,7 +70,9 @@ public:
 		int loopCount = 0;
 		while (s_running.IsSet())
 		{
+			fprintf(stderr, "[DEBUG] MainLoop: About to call Core::HostDispatchJobs()\n");
 			Core::HostDispatchJobs();
+			fprintf(stderr, "[DEBUG] MainLoop: Core::HostDispatchJobs() completed\n");
 			
 			// Add some debugging every 100 iterations (10 seconds)
 			loopCount++;
@@ -80,15 +82,20 @@ public:
 				
 				// Check if Slippi replay system is active
 #ifdef IS_PLAYBACK
+				fprintf(stderr, "[DEBUG] MainLoop: Checking Slippi replay system\n");
 				extern std::unique_ptr<SlippiReplayComm> g_replayComm;
 				extern std::unique_ptr<SlippiPlaybackStatus> g_playbackStatus;
 				
 				if (g_replayComm)
 				{
 					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is initialized\n");
-					auto settings = g_replayComm->getSettings();
-					fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s, path: %s\n", 
-						settings.mode.c_str(), settings.replayPath.c_str());
+					try {
+						auto settings = g_replayComm->getSettings();
+						fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s, path: %s\n", 
+							settings.mode.c_str(), settings.replayPath.c_str());
+					} catch (const std::exception& e) {
+						fprintf(stderr, "[DEBUG] MainLoop: Exception getting replay settings: %s\n", e.what());
+					}
 				}
 				else
 				{
@@ -107,7 +114,9 @@ public:
 #endif
 			}
 			
+			fprintf(stderr, "[DEBUG] MainLoop: About to sleep for 100ms\n");
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			fprintf(stderr, "[DEBUG] MainLoop: Sleep completed\n");
 		}
 		fprintf(stderr, "[DEBUG] MainLoop: Main loop ended\n");
 	}

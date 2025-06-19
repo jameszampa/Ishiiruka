@@ -170,13 +170,17 @@ CEXISlippi::CEXISlippi()
 	g_playbackStatus = std::make_unique<SlippiPlaybackStatus>();
 	matchmaking = std::make_unique<SlippiMatchmaking>(user.get());
 	gameFileLoader = std::make_unique<SlippiGameFileLoader>();
+	fprintf(stderr, "[SLIPPI DEBUG] About to create SlippiReplayComm\n");
 	g_replayComm = std::make_unique<SlippiReplayComm>();
+	fprintf(stderr, "[SLIPPI DEBUG] SlippiReplayComm created successfully\n");
 	directCodes = std::make_unique<SlippiDirectCodes>("direct-codes.json");
 	teamsCodes = std::make_unique<SlippiDirectCodes>("teams-codes.json");
 
 	generator = std::default_random_engine(Common::Timer::GetTimeMs());
 
+	fprintf(stderr, "[SLIPPI DEBUG] About to call g_replayComm->getSettings()\n");
 	shouldOutput = SConfig::GetInstance().m_coutEnabled && g_replayComm->getSettings().mode != "mirror";
+	fprintf(stderr, "[SLIPPI DEBUG] getSettings() call completed, shouldOutput: %s\n", shouldOutput ? "true" : "false");
 
 	// Loggers will check 5 bytes, make sure we own that memory
 	m_read_queue.reserve(5);
