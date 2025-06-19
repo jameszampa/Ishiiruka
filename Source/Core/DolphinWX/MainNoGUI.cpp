@@ -130,6 +130,12 @@ public:
 #endif
 			}
 			
+			// Add more frequent debugging for the first few iterations
+			if (loopCount <= 50)
+			{
+				fprintf(stderr, "[DEBUG] MainLoop: Early iteration %d, Core state: %d\n", loopCount, Core::GetState());
+			}
+			
 			// Check if core is still running
 			if (!Core::IsRunning())
 			{
