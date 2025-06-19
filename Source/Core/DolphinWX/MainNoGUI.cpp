@@ -620,6 +620,17 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "[DEBUG] Slippi configuration complete\n");
 #endif
 
+	// Configure audio for headless Docker environment
+	fprintf(stderr, "[DEBUG] Configuring audio for headless environment\n");
+	SConfig& audioConfig = SConfig::GetInstance();
+	fprintf(stderr, "[DEBUG] Setting audio backend to null sound\n");
+	audioConfig.sBackend = "No audio output";
+	fprintf(stderr, "[DEBUG] Enabling audio dumping\n");
+	audioConfig.m_DumpAudio = true;
+	fprintf(stderr, "[DEBUG] Enabling silent audio dumping\n");
+	audioConfig.m_DumpAudioSilent = true;
+	fprintf(stderr, "[DEBUG] Audio configuration complete\n");
+
 	fprintf(stderr, "[DEBUG] Getting platform\n");
 	platform = GetPlatform();
 	if (!platform)
