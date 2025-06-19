@@ -539,6 +539,22 @@ int main(int argc, char* argv[])
 		config.m_strSlippiInput = "Slippi/playback.txt";
 		fprintf(stderr, "[DEBUG] Using default Slippi input: Slippi/playback.txt\n");
 	}
+	
+	// Enable replay regeneration for playback mode
+	fprintf(stderr, "[DEBUG] About to enable Slippi replay regeneration\n");
+	fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for replay regeneration\n");
+	SConfig& config = SConfig::GetInstance();
+	fprintf(stderr, "[DEBUG] SConfig::GetInstance() for replay regeneration completed\n");
+	fprintf(stderr, "[DEBUG] About to assign to m_slippiRegenerateReplays\n");
+	config.m_slippiRegenerateReplays = true;
+	fprintf(stderr, "[DEBUG] Slippi replay regeneration enabled\n");
+	
+	// Set the regenerate replay directory to the output directory
+	fprintf(stderr, "[DEBUG] About to set Slippi regenerate replay directory\n");
+	fprintf(stderr, "[DEBUG] About to assign to m_strSlippiRegenerateReplayDir\n");
+	config.m_strSlippiRegenerateReplayDir = output_directory;
+	fprintf(stderr, "[DEBUG] Set Slippi regenerate replay directory to: %s\n", output_directory.c_str());
+	
 	if (hide_seekbar) {
 		fprintf(stderr, "[DEBUG] About to set hide seekbar config\n");
 		fprintf(stderr, "[DEBUG] About to call SConfig::GetInstance() for hide seekbar\n");
