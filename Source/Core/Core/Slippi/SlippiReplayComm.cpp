@@ -66,8 +66,10 @@ std::string SlippiReplayComm::getReplayPath()
 
 bool SlippiReplayComm::isNewReplay()
 {
+	fprintf(stderr, "[SLIPPI DEBUG] isNewReplay() called\n");
 	loadFile();
 	std::string replayFilePath = getReplayPath();
+	fprintf(stderr, "[SLIPPI DEBUG] Replay file path: %s\n", replayFilePath.c_str());
 
 	bool hasPathChanged = replayFilePath != previousReplayLoaded;
 	bool isReplay = !!replayFilePath.length();
@@ -87,6 +89,13 @@ bool SlippiReplayComm::isNewReplay()
 	}
 
 	bool isNewReplay = hasPathChanged || hasCommandChanged || hasQueueIdxChanged;
+	
+	fprintf(stderr, "[SLIPPI DEBUG] isNewReplay result: hasPathChanged=%s, hasCommandChanged=%s, hasQueueIdxChanged=%s, isReplay=%s, isNewReplay=%s\n",
+		hasPathChanged ? "true" : "false",
+		hasCommandChanged ? "true" : "false", 
+		hasQueueIdxChanged ? "true" : "false",
+		isReplay ? "true" : "false",
+		isNewReplay ? "true" : "false");
 
 	return isReplay && isNewReplay;
 }
@@ -109,11 +118,21 @@ void SlippiReplayComm::nextReplay()
 
 std::unique_ptr<Slippi::SlippiGame> SlippiReplayComm::loadGame()
 {
+	fprintf(stderr, "[SLIPPI DEBUG] loadGame() called\n");
 	auto replayFilePath = getReplayPath();
-	INFO_LOG(EXPANSIONINTERFACE, "Attempting to load replay file %s", replayFilePath.c_str());
+	fprintf(stderr, "[SLIPPI DEBUG] Attempting to load replay file: %s\n", replayFilePath.c_str());
+	
+	// Check if file exists
+	if (!File::Exists(replayFilePath)) {
+		fprintf(stderr, "[SLIPPI DEBUG] Replay file does not exist: %s\n", replayFilePath.c_str());
+		return nullptr;
+	}
+	
+	fprintf(stderr, "[SLIPPI DEBUG] Replay file exists, attempting to load\n");
 	auto result = Slippi::SlippiGame::FromFile(replayFilePath);
 	if (result)
 	{
+		fprintf(stderr, "[SLIPPI DEBUG] Replay file loaded successfully\n");
 		// If we successfully loaded a SlippiGame, indicate as such so
 		// that this game won't be considered new anymore. If the replay
 		// file did not exist yet, result will be falsy, which will keep
@@ -143,6 +162,10 @@ std::unique_ptr<Slippi::SlippiGame> SlippiReplayComm::loadGame()
 		}
 
 		current = ws;
+	}
+	else
+	{
+		fprintf(stderr, "[SLIPPI DEBUG] Failed to load replay file\n");
 	}
 
 	return std::move(result);

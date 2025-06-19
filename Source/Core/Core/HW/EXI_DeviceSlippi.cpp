@@ -1269,14 +1269,17 @@ void CEXISlippi::prepareIsStockSteal(u8 *payload)
 
 void CEXISlippi::prepareIsFileReady()
 {
+	fprintf(stderr, "[SLIPPI DEBUG] prepareIsFileReady() called\n");
 	m_read_queue.clear();
 
 	// Hides frame index message on waiting for game screen
 	OSD::AddTypedMessage(OSD::MessageType::FrameIndex, "", 0, OSD::Color::CYAN);
 
 	auto isNewReplay = g_replayComm->isNewReplay();
+	fprintf(stderr, "[SLIPPI DEBUG] isNewReplay result: %s\n", isNewReplay ? "true" : "false");
 	if (!isNewReplay)
 	{
+		fprintf(stderr, "[SLIPPI DEBUG] No new replay, calling nextReplay()\n");
 		g_replayComm->nextReplay();
 		m_read_queue.push_back(0);
 		return;
@@ -1284,15 +1287,18 @@ void CEXISlippi::prepareIsFileReady()
 
 	// Attempt to load game if there is a new replay file
 	// this can come pack falsy if the replay file does not exist
+	fprintf(stderr, "[SLIPPI DEBUG] Attempting to load game\n");
 	m_current_game = g_replayComm->loadGame();
 	if (!m_current_game)
 	{
 		// Do not start if replay file doesn't exist
 		// TODO: maybe display error message?
+		fprintf(stderr, "[SLIPPI DEBUG] Failed to load replay file\n");
 		INFO_LOG(SLIPPI, "EXI_DeviceSlippi.cpp: Replay file does not exist?");
 		m_read_queue.push_back(0);
 		return;
 	}
+	fprintf(stderr, "[SLIPPI DEBUG] Replay file loaded successfully\n");
 #ifdef IS_PLAYBACK
 	if (shouldOutput)
 	{
@@ -1314,6 +1320,7 @@ void CEXISlippi::prepareIsFileReady()
 	g_playbackStatus->resetPlayback();
 
 	// Start the playback!
+	fprintf(stderr, "[SLIPPI DEBUG] Starting playback, pushing 1 to read queue\n");
 	m_read_queue.push_back(1);
 }
 

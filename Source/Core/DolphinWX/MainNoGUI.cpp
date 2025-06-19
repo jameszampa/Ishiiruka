@@ -92,6 +92,11 @@ public:
 					auto settings = g_replayComm->getSettings();
 					fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s, path: %s\n", 
 						settings.mode.c_str(), settings.replayPath.c_str());
+					
+					// Check if replay file exists
+					fprintf(stderr, "[DEBUG] MainLoop: Checking if replay file exists: %s\n", settings.replayPath.c_str());
+					// Note: We can't call File::Exists here directly, but we can check if the path is valid
+					fprintf(stderr, "[DEBUG] MainLoop: Replay path length: %zu\n", settings.replayPath.length());
 				}
 				else
 				{

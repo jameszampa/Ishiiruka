@@ -1,11 +1,4 @@
 {
     "replay": "/replays/replay.slp",
-    "startFrame": -123,
-    "endFrame": 1000,
-    "mode": "normal",
-    "outputOverlayFiles": false,
-    "isRealTimeMode": false,
-    "shouldResync": true,
-    "rollbackDisplayMethod": "off",
-    "commandId": "force_process"
+    "mode": "normal"
 }
