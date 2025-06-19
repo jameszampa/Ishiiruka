@@ -11,6 +11,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <execinfo.h>
 #endif
 
 #include "AudioCommon/AudioCommon.h"
@@ -714,6 +716,19 @@ void EmuThread()
 void SetState(EState state)
 {
 	fprintf(stderr, "[CORE DEBUG] SetState called: %d\n", state);
+	if (state == CORE_PAUSE)
+	{
+		fprintf(stderr, "[CORE DEBUG] SetState: Pausing core, stack trace:\n");
+		// Add a simple stack trace to see where this is being called from
+		void* callstack[10];
+		int frames = backtrace(callstack, 10);
+		char** symbols = backtrace_symbols(callstack, frames);
+		for (int i = 0; i < frames; i++)
+		{
+			fprintf(stderr, "[CORE DEBUG] SetState: %s\n", symbols[i]);
+		}
+		free(symbols);
+	}
 	// State cannot be controlled until the CPU Thread is operational
 	if (!IsRunningAndStarted())
 		return;

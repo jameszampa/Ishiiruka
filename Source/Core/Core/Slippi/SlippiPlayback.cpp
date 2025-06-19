@@ -77,15 +77,18 @@ SlippiPlaybackStatus::SlippiPlaybackStatus()
 
 void SlippiPlaybackStatus::startThreads()
 {
+	fprintf(stderr, "[SLIPPI DEBUG] startThreads called\n");
 	shouldRunThreads = true;
 
 	if (!m_savestateThread.joinable())
 	{
+		fprintf(stderr, "[SLIPPI DEBUG] Starting savestate thread\n");
 		m_savestateThread = std::thread(&SlippiPlaybackStatus::SavestateThread, this);
 	}
 	
 	if (!m_seekThread.joinable())
 	{
+		fprintf(stderr, "[SLIPPI DEBUG] Starting seek thread\n");
 		m_seekThread = std::thread(&SlippiPlaybackStatus::SeekThread, this);
 	}
 }
@@ -188,6 +191,7 @@ void SlippiPlaybackStatus::SavestateThread()
 
 		if (!inSlippiPlayback && isStartFrame)
 		{
+			fprintf(stderr, "[SLIPPI DEBUG] SavestateThread: Setting inSlippiPlayback to true\n");
 			processInitialState(iState);
 			inSlippiPlayback = true;
 		}
@@ -216,14 +220,33 @@ void SlippiPlaybackStatus::SeekThread()
 	{
 		bool shouldSeek = inSlippiPlayback && (shouldJumpBack || shouldJumpForward || targetFrameNum != INT_MAX);
 
+		// Add debug output every 100 iterations to see what's happening
+		static int debugCounter = 0;
+		debugCounter++;
+		if (debugCounter % 100 == 0)
+		{
+			fprintf(stderr, "[SLIPPI DEBUG] SeekThread: inSlippiPlayback=%s, shouldJumpBack=%s, shouldJumpForward=%s, targetFrameNum=%d, shouldSeek=%s\n",
+				inSlippiPlayback ? "true" : "false",
+				shouldJumpBack ? "true" : "false", 
+				shouldJumpForward ? "true" : "false",
+				targetFrameNum,
+				shouldSeek ? "true" : "false");
+		}
+
 		if (shouldSeek)
 		{
+			fprintf(stderr, "[SLIPPI DEBUG] SeekThread: shouldSeek is true, pausing core\n");
 			auto replayCommSettings = g_replayComm->getSettings();
 			if (replayCommSettings.mode == "queue")
 				updateWatchSettingsStartEnd();
 
 			bool paused = (Core::GetState() == Core::CORE_PAUSE);
-			Core::SetState(Core::CORE_PAUSE);
+			// Only pause the core if we're actually going to perform a seek operation
+			if (!paused)
+			{
+				fprintf(stderr, "[SLIPPI DEBUG] SeekThread: Actually pausing the core\n");
+				Core::SetState(Core::CORE_PAUSE);
+			}
 
 			u32 jumpInterval = 300; // 5 seconds;
 
@@ -553,8 +576,7 @@ void SlippiPlaybackStatus::generateLegacyCodelist() {
 	    0x37, 0x27, 0x00, 0x00, 0x43, 0x30, 0x00, 0x00, 0x3F, 0x80, 0x00, 0x00, 0xBF, 0x4C, 0xCC, 0xCD, 0x43, 0x30,
 	    0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x7F, 0xC3, 0xF3, 0x78, 0x7F, 0xE4, 0xFB, 0x78, 0xBA, 0x81, 0x00, 0x08,
 	    0x80, 0x01, 0x00, 0xB4, 0x38, 0x21, 0x00, 0xB0, 0x7C, 0x08, 0x03, 0xA6, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00,
-	    0x00, 0x00, 0xC2, 0x16, 0xE7, 0x50, 0x00, 0x00, 0x00,
-	    0x33, // #Common/StaticPatches/ToggledStaticOverwrites.asm
+	    0x00, 0x00, 0xC2, 0x16, 0xE7, 0x50, 0x00, 0x00, 0x00, 0x33, // #Common/StaticPatches/ToggledStaticOverwrites.asm
 	    0x88, 0x62, 0xF2, 0x34, 0x2C, 0x03, 0x00, 0x00, 0x41, 0x82, 0x00, 0x14, 0x48, 0x00, 0x00, 0x75, 0x7C, 0x68,
 	    0x02, 0xA6, 0x48, 0x00, 0x01, 0x3D, 0x48, 0x00, 0x00, 0x14, 0x48, 0x00, 0x00, 0x95, 0x7C, 0x68, 0x02, 0xA6,
 	    0x48, 0x00, 0x01, 0x2D, 0x48, 0x00, 0x00, 0x04, 0x88, 0x62, 0xF2, 0x38, 0x2C, 0x03, 0x00, 0x00, 0x41, 0x82,
