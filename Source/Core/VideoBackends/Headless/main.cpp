@@ -182,7 +182,7 @@ bool VideoBackend::Initialize(void *window_handle)
 	g_Config.VerifyValidity();
 	UpdateActiveConfig();
 
-	PixelEngine::Init();
+	// PixelEngine::Init(); // Removed duplicate call - already called in InitializeShared()
 	DebugUtil::Init();
 
 	// Do our OSD callbacks
@@ -208,8 +208,7 @@ void VideoBackend::Video_Prepare()
 	// Create renderer instance
 	g_renderer = std::make_unique<HeadlessRenderer>();
 
-	CommandProcessor::Init();
-	PixelEngine::Init();
+	// CommandProcessor::Init(); // Removed duplicate call - already called in InitializeShared()
 
 	BPInit();
 	
@@ -218,7 +217,7 @@ void VideoBackend::Video_Prepare()
 	
 	g_perf_query = std::make_unique<PerfQuery>();
 	Fifo::Init(); // must be done before OpcodeDecoder_Init()
-	OpcodeDecoder::Init();
+	// OpcodeDecoder::Init(); // Removed duplicate call - already called in InitializeShared()
 	IndexGenerator::Init();
 	VertexShaderManager::Init();
 	PixelShaderManager::Init(true);
