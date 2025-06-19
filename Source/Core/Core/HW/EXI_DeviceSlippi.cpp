@@ -3242,10 +3242,12 @@ void CEXISlippi::DMAWrite(u32 _uAddr, u32 _uSize)
 			slprs_exi_device_reporter_push_replay_data(slprs_exi_device_ptr, &memPtr[bufLoc], payloadLen + 1);
 			break;
 		case CMD_PREPARE_REPLAY:
+			fprintf(stderr, "[SLIPPI DEBUG] Received CMD_PREPARE_REPLAY command\n");
 			// log.open("log.txt");
 			prepareGameInfo(&memPtr[bufLoc + 1]);
 			break;
 		case CMD_READ_FRAME:
+			fprintf(stderr, "[SLIPPI DEBUG] Received CMD_READ_FRAME command\n");
 			prepareFrameData(&memPtr[bufLoc + 1]);
 			break;
 		case CMD_FRAME_BOOKEND:
