@@ -99,6 +99,19 @@ public:
 					fprintf(stderr, "[DEBUG] MainLoop: Checking if replay file exists: %s\n", settings.replayPath.c_str());
 					// Note: We can't call File::Exists here directly, but we can check if the path is valid
 					fprintf(stderr, "[DEBUG] MainLoop: Replay path length: %zu\n", settings.replayPath.length());
+					
+					// Check if the replay file is accessible
+					FILE* testFile = fopen(settings.replayPath.c_str(), "rb");
+					if (testFile)
+					{
+						fprintf(stderr, "[DEBUG] MainLoop: Replay file is accessible\n");
+						fclose(testFile);
+					}
+					else
+					{
+						fprintf(stderr, "[DEBUG] MainLoop: Replay file is NOT accessible (fopen failed)\n");
+						fprintf(stderr, "[DEBUG] MainLoop: Error: %s\n", strerror(errno));
+					}
 				}
 				else
 				{
@@ -115,6 +128,14 @@ public:
 					fprintf(stderr, "[DEBUG] MainLoop: SlippiPlaybackStatus is not initialized\n");
 				}
 #endif
+			}
+			
+			// Check if core is still running
+			if (!Core::IsRunning())
+			{
+				fprintf(stderr, "[DEBUG] MainLoop: Core stopped running, breaking loop\n");
+				fprintf(stderr, "[DEBUG] MainLoop: Core state when stopped: %d\n", Core::GetState());
+				break;
 			}
 			
 			fprintf(stderr, "[DEBUG] MainLoop: About to sleep for 100ms\n");
