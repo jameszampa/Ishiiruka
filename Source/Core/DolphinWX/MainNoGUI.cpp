@@ -61,11 +61,50 @@ public:
 	virtual void SetTitle(const std::string& title) {}
 	virtual void MainLoop()
 	{
+		fprintf(stderr, "[DEBUG] MainLoop: Starting main loop\n");
+		int loopCount = 0;
 		while (s_running.IsSet())
 		{
 			Core::HostDispatchJobs();
+			
+			// Add some debugging every 100 iterations (10 seconds)
+			loopCount++;
+			if (loopCount % 100 == 0)
+			{
+				fprintf(stderr, "[DEBUG] MainLoop: Still running, iteration %d\n", loopCount);
+				
+				// Check if Slippi replay system is active
+#ifdef IS_PLAYBACK
+				extern std::unique_ptr<SlippiReplayComm> g_replayComm;
+				extern std::unique_ptr<SlippiPlaybackStatus> g_playbackStatus;
+				
+				if (g_replayComm)
+				{
+					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is initialized\n");
+					auto settings = g_replayComm->getSettings();
+					fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s, path: %s\n", 
+						settings.mode.c_str(), settings.replayPath.c_str());
+				}
+				else
+				{
+					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is not initialized\n");
+				}
+				
+				if (g_playbackStatus)
+				{
+					fprintf(stderr, "[DEBUG] MainLoop: SlippiPlaybackStatus is initialized, inSlippiPlayback: %s\n", 
+						g_playbackStatus->inSlippiPlayback ? "true" : "false");
+				}
+				else
+				{
+					fprintf(stderr, "[DEBUG] MainLoop: SlippiPlaybackStatus is not initialized\n");
+				}
+#endif
+			}
+			
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
+		fprintf(stderr, "[DEBUG] MainLoop: Main loop ended\n");
 	}
 	virtual void Shutdown() {}
 	virtual ~Platform() {}
