@@ -31,7 +31,7 @@
 
 #ifdef IS_PLAYBACK
 #include "Core/Slippi/SlippiReplayComm.h"
-#include "Core/Slippi/SlippiPlaybackStatus.h"
+#include "Core/Slippi/SlippiPlayback.h"
 #endif
 
 #include "UICommon/UICommon.h"
