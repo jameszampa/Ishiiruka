@@ -11,33 +11,44 @@
 #include <thread>
 #include <unistd.h>
 
+#include "Common/Common.h"
+#include "Common/CommonPaths.h"
 #include "Common/CommonTypes.h"
-#include "Common/Event.h"
-#include "Common/Flag.h"
+#include "Common/CPUDetect.h"
+#include "Common/FileUtil.h"
 #include "Common/Logging/LogManager.h"
 #include "Common/MsgHandler.h"
+#include "Common/Thread.h"
+#include "Common/Timer.h"
 
 #include "Core/Analytics.h"
+#include "Core/Boot/Boot.h"
 #include "Core/BootManager.h"
 #include "Core/ConfigManager.h"
 #include "Core/Core.h"
-#include "Core/HW/Wiimote.h"
-#include "Core/Host.h"
-#include "Core/IPC_HLE/WII_IPC_HLE.h"
-#include "Core/IPC_HLE/WII_IPC_HLE_Device_stm.h"
-#include "Core/IPC_HLE/WII_IPC_HLE_Device_usb_bt_emu.h"
-#include "Core/IPC_HLE/WII_IPC_HLE_WiiMote.h"
+#include "Core/HW/CPU.h"
+#include "Core/HW/DVDInterface.h"
+#include "Core/HW/EXI_DeviceSlippi.h"
+#include "Core/HW/SystemTimers.h"
+#include "Core/Movie.h"
+#include "Core/NetPlayClient.h"
+#include "Core/NetPlayServer.h"
+#include "Core/PatchEngine.h"
+#include "Core/PowerPC/PowerPC.h"
 #include "Core/State.h"
+#include "Core/VideoBackends/Headless/main.h"
 
-#ifdef IS_PLAYBACK
-#include "Core/Slippi/SlippiReplayComm.h"
 #include "Core/Slippi/SlippiPlayback.h"
-#endif
+#include "Core/Slippi/SlippiReplayComm.h"
 
 #include "UICommon/UICommon.h"
 
 #include "VideoCommon/RenderBase.h"
 #include "VideoCommon/VideoBackendBase.h"
+
+// External declarations for Slippi replay system
+extern std::unique_ptr<SlippiPlaybackStatus> g_playbackStatus;
+extern std::unique_ptr<SlippiReplayComm> g_replayComm;
 
 static bool rendererHasFocus = true;
 static bool rendererIsFullscreen = false;
@@ -105,18 +116,6 @@ public:
 				else
 				{
 					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is null\n");
-				}
-				
-				// Check if we have a current game loaded
-				extern std::unique_ptr<Slippi::SlippiGame> m_current_game;
-				if (m_current_game)
-				{
-					fprintf(stderr, "[DEBUG] MainLoop: Current game is loaded\n");
-					fprintf(stderr, "[DEBUG] MainLoop: Latest frame: %d\n", m_current_game->GetLatestIndex());
-				}
-				else
-				{
-					fprintf(stderr, "[DEBUG] MainLoop: No current game loaded\n");
 				}
 			}
 			
