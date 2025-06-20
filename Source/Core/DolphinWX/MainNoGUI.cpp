@@ -83,57 +83,41 @@ public:
 					Core::GetState(), Core::IsRunning() ? "true" : "false");
 				
 				// Check if Slippi replay system is active
-#ifdef IS_PLAYBACK
-				fprintf(stderr, "[DEBUG] MainLoop: Checking Slippi replay system\n");
-				extern std::unique_ptr<SlippiReplayComm> g_replayComm;
-				extern std::unique_ptr<SlippiPlaybackStatus> g_playbackStatus;
-				
 				if (g_replayComm)
 				{
-					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is initialized\n");
+					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm exists\n");
 					auto settings = g_replayComm->getSettings();
-					fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s, path: %s\n", 
-						settings.mode.c_str(), settings.replayPath.c_str());
+					fprintf(stderr, "[DEBUG] MainLoop: Replay mode: %s\n", settings.mode.c_str());
+					fprintf(stderr, "[DEBUG] MainLoop: Replay path: %s\n", settings.replayPath.c_str());
+					fprintf(stderr, "[DEBUG] MainLoop: Is new replay: %s\n", g_replayComm->isNewReplay() ? "true" : "false");
 					
-					// Check if replay file exists
-					fprintf(stderr, "[DEBUG] MainLoop: Checking if replay file exists: %s\n", settings.replayPath.c_str());
-					// Note: We can't call File::Exists here directly, but we can check if the path is valid
-					fprintf(stderr, "[DEBUG] MainLoop: Replay path length: %zu\n", settings.replayPath.length());
-					
-					// Check if the replay file is accessible
-					FILE* testFile = fopen(settings.replayPath.c_str(), "rb");
-					if (testFile)
+					// Try to load a game to see if it works
+					auto testGame = g_replayComm->loadGame();
+					if (testGame)
 					{
-						fprintf(stderr, "[DEBUG] MainLoop: Replay file is accessible\n");
-						fclose(testFile);
+						fprintf(stderr, "[DEBUG] MainLoop: Test game load successful, latest frame: %d\n", testGame->GetLatestIndex());
 					}
 					else
 					{
-						fprintf(stderr, "[DEBUG] MainLoop: Replay file is NOT accessible (fopen failed)\n");
-						fprintf(stderr, "[DEBUG] MainLoop: Error: %s\n", strerror(errno));
+						fprintf(stderr, "[DEBUG] MainLoop: Test game load failed\n");
 					}
 				}
 				else
 				{
-					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is not initialized\n");
+					fprintf(stderr, "[DEBUG] MainLoop: SlippiReplayComm is null\n");
 				}
 				
-				if (g_playbackStatus)
+				// Check if we have a current game loaded
+				extern std::unique_ptr<Slippi::SlippiGame> m_current_game;
+				if (m_current_game)
 				{
-					fprintf(stderr, "[DEBUG] MainLoop: SlippiPlaybackStatus is initialized, inSlippiPlayback: %s\n", 
-						g_playbackStatus->inSlippiPlayback ? "true" : "false");
+					fprintf(stderr, "[DEBUG] MainLoop: Current game is loaded\n");
+					fprintf(stderr, "[DEBUG] MainLoop: Latest frame: %d\n", m_current_game->GetLatestIndex());
 				}
 				else
 				{
-					fprintf(stderr, "[DEBUG] MainLoop: SlippiPlaybackStatus is not initialized\n");
+					fprintf(stderr, "[DEBUG] MainLoop: No current game loaded\n");
 				}
-#endif
-			}
-			
-			// Add more frequent debugging for the first few iterations
-			if (loopCount <= 50)
-			{
-				fprintf(stderr, "[DEBUG] MainLoop: Early iteration %d, Core state: %d\n", loopCount, Core::GetState());
 			}
 			
 			// Check if core is still running

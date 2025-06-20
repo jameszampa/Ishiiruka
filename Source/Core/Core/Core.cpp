@@ -729,19 +729,30 @@ void SetState(EState state)
 		}
 		free(symbols);
 	}
+	else if (state == CORE_RUN)
+	{
+		fprintf(stderr, "[CORE DEBUG] SetState: Starting core to RUN state\n");
+	}
 	// State cannot be controlled until the CPU Thread is operational
 	if (!IsRunningAndStarted())
+	{
+		fprintf(stderr, "[CORE DEBUG] SetState: Core not running and started, ignoring state change\n");
 		return;
+	}
 
 	// Do not allow any kind of cpu pause/resum if we are connected to someone on slippi
 	if (IsOnline())
+	{
+		fprintf(stderr, "[CORE DEBUG] SetState: Online mode, ignoring state change\n");
 		return;
+	}
 
 	switch (state)
 	{
 	case CORE_PAUSE:
 		// NOTE: GetState() will return CORE_PAUSE immediately, even before anything has
 		//   stopped (including the CPU).
+		fprintf(stderr, "[CORE DEBUG] SetState: Enabling CPU stepping (pause)\n");
 		CPU::EnableStepping(true); // Break
 		Wiimote::Pause();
 #if defined(__LIBUSB__)
@@ -749,6 +760,7 @@ void SetState(EState state)
 #endif
 		break;
 	case CORE_RUN:
+		fprintf(stderr, "[CORE DEBUG] SetState: Disabling CPU stepping (run)\n");
 		CPU::EnableStepping(false);
 		Wiimote::Resume();
 		break;

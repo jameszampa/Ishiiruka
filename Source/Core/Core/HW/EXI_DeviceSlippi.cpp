@@ -3261,7 +3261,9 @@ void CEXISlippi::DMAWrite(u32 _uAddr, u32 _uSize)
 			break;
 		case CMD_IS_FILE_READY:
 			fprintf(stderr, "[SLIPPI DEBUG] Received CMD_IS_FILE_READY command\n");
+			fprintf(stderr, "[SLIPPI DEBUG] About to call prepareIsFileReady()\n");
 			prepareIsFileReady();
+			fprintf(stderr, "[SLIPPI DEBUG] prepareIsFileReady() completed\n");
 			break;
 		case CMD_GET_GECKO_CODES:
 			m_read_queue.clear();
