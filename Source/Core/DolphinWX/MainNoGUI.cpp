@@ -31,6 +31,7 @@
 #include "Core/HW/EXI_DeviceSlippi.h"
 #include "Core/HW/SystemTimers.h"
 #include "Core/IPC_HLE/WII_IPC_HLE_WiiMote.h"
+#include "Core/IPC_HLE/WII_IPC_HLE_Device_usb_bt_emu.h"
 #include "Core/Movie.h"
 #include "Core/NetPlayClient.h"
 #include "Core/NetPlayServer.h"
