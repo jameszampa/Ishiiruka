@@ -36,7 +36,7 @@
 #include "Core/PatchEngine.h"
 #include "Core/PowerPC/PowerPC.h"
 #include "Core/State.h"
-#include "Core/VideoBackends/Headless/VideoBackend.h"
+#include "VideoBackends/Headless/VideoBackend.h"
 
 #include "Core/Slippi/SlippiPlayback.h"
 #include "Core/Slippi/SlippiReplayComm.h"
