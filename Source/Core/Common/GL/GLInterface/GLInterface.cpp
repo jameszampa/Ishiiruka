@@ -10,7 +10,7 @@
 #include "Common/GL/GLInterface/AGL.h"
 #elif defined(_WIN32)
 #include "Common/GL/GLInterface/WGL.h"
-#elif HAVE_X11
+#elif defined(HAVE_X11) && HAVE_X11
 #if defined(USE_EGL) && USE_EGL
 #include "Common/GL/GLInterface/EGLX11.h"
 #else
