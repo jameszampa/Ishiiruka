@@ -66,7 +66,7 @@ WORKDIR /opt
 
 RUN git clone https://github.com/jameszampa/Ishiiruka.git && \
     cd Ishiiruka && \
-    git checkout feature/headless-playback && \
+    git checkout experiment/x11 && \
     git submodule update --init --recursive && \
     chmod +x build-linux-headless.sh
 
