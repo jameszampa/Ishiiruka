@@ -15,6 +15,7 @@ RUN apt-get update && \
     libavutil-dev \
     ffmpeg \
     curl \
+    xvfb \
     libx11-dev \
     libxrandr-dev \
     libxinerama-dev \
@@ -78,4 +79,7 @@ RUN cd Ishiiruka && \
     cmake -DRust_COMPILER=/root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc -B build && \
     ./build-linux-headless.sh playback
 
-ENTRYPOINT ["/opt/Ishiiruka/build/Binaries/dolphin-emu-nogui"]
+COPY start.sh /opt/start.sh
+RUN chmod +x /opt/start.sh
+
+ENTRYPOINT ["/opt/start.sh"]
