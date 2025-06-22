@@ -5,6 +5,7 @@
 #include "DolphinWX/Config/SlippiConfigPane.h"
 
 #include <cassert>
+#include <cstring>
 #include <string>
 
 #include <wx/button.h>
