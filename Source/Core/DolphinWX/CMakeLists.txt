@@ -252,6 +252,8 @@ if(ENABLE_HEADLESS)
 	set(NOGUI_SRCS MainNoGUI.cpp)
 	if(USE_X11)
 		set(NOGUI_SRCS ${NOGUI_SRCS} X11Utils.cpp)
+		# Add X11 libraries for headless build since X11Utils.cpp needs them
+		set(WXLIBS ${WXLIBS} ${X11_LIBRARIES} ${XRANDR_LIBRARIES})
 	endif()
 	set(DOLPHIN_NOGUI_EXE ${DOLPHIN_EXE_BASE}-nogui)
 	add_executable(${DOLPHIN_NOGUI_EXE} ${SRCS} ${NOGUI_SRCS})
