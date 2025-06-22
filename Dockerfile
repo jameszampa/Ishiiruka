@@ -22,6 +22,7 @@ RUN apt-get update && \
     libxi-dev \
     libgl1-mesa-dev \
     libglu1-mesa-dev \
+    libegl1-mesa-dev \
     libevdev-dev \
     libudev-dev \
     libgtk-3-dev \
