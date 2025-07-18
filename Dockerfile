@@ -69,7 +69,7 @@ RUN git clone https://github.com/jameszampa/Ishiiruka.git && \
     cd Ishiiruka && \
     git checkout experiment/x11 && \
     git submodule update --init --recursive && \
-    chmod +x build-linux-headless.sh
+    chmod +x start-with-display.sh
 
 # Verify Rust installation and build
 RUN cd Ishiiruka && \
@@ -77,6 +77,6 @@ RUN cd Ishiiruka && \
     rustc --version && \
     cargo --version && \
     cmake -DRust_COMPILER=/root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc -B build && \
-    ./build-linux-headless.sh playback
+    ./build-linux.sh playback
 
-ENTRYPOINT ["/opt/Ishiiruka/build/Binaries/dolphin-emu-nogui"]
+ENTRYPOINT ["./start-with-display.sh"]
